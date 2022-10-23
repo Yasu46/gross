@@ -77,7 +77,6 @@ export default defineComponent({
         username: this.username,
         password: this.password
       }
-      
       for(let i = 0; i < this.store.user.length; i++){
         if(data.username == this.store.user[i].username && data.password == this.store.user[i].password) {
           this.$router.push("/")
@@ -87,16 +86,18 @@ export default defineComponent({
           this.store.getUsername = this.store.user[i].username
           this.store.loginUser = this.store.user[i]
           this.store.history = this.store.histories[i]
-        }else if(data.username == this.store.staffs[i].name && data.password == this.store.staffs[i].password) {
-          this.$router.push("/staff")
-          this.store.login = true
         }else if (data.username == "admin" && data.password == '123456') {
           this.$router.push("/dashb")
           this.store.adminBar = true
           this.store.login = true
         }
       }
-      
+      for(let i = 0; i < this.store.staffs.length; i++){
+        if(data.username == this.store.staffs[i].name && data.password == this.store.staffs[i].password) {
+          this.$router.push("/staff")
+          this.store.login = true
+        }
+      }
       this.$refs.myLoginForm.reset(); 
     }
   }
