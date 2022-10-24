@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <div class="q-pa-md" style="width: 610px">
+    <div class="q-pa-md" style="max-width: 610px">
       <h5>RequestForm</h5>
       <q-form
         @submit.prevent="onAddRequest()"
