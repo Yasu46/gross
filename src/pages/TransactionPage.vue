@@ -1,64 +1,68 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="q-pa-md" style="width: 670px">
-      <q-table
-        title="Manage Request"
-        :rows="store.requestList"
-        :columns="columns"
-        row-key="name"
-      >
-        <template #body-cell-status="props">
-          <q-td :props="props">
-            <q-badge :color="this.store.statusColor(props.row)">
-              {{props.row.status}}
-            </q-badge>
-          </q-td>
-        </template>
+  <q-page>
+    <div class="row q-mt-lg q-mx-sm">
+      <div class="col">
+        <div style="max-width:650px; text-align:center; margin-left:auto; margin-right:auto">
+          <q-table
+            title="Manage Request"
+            :rows="store.requestList"
+            :columns="columns"
+            row-key="name"
+          >
+            <template #body-cell-status="props">
+              <q-td :props="props">
+                <q-badge :color="this.store.statusColor(props.row)">
+                  {{props.row.status}}
+                </q-badge>
+              </q-td>
+            </template>
 
-        <template #body-cell-action="props">
-          <q-td :props="props">
-            <div class="q-pa-md">
-              <q-btn-dropdown
-                dense
-                :value="props.row.staffID"
-                :label="props.row.staffNameLabel"
-                icon="engineering" 
-                color="primary"
-                :disabled="this.store.assignedCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
-              >
-                <q-list>
-                  <q-item 
-                    clickable 
-                    v-close-popup 
-                    @click="props.row.staffNameLabel = staff.name, props.row.staffID = staff.staffId"
-                    v-for="(staff,index) in renewStaffs"
-                    :key="index"
+            <template #body-cell-action="props">
+              <q-td :props="props">
+                <div class="q-pa-md">
+                  <q-btn-dropdown
+                    dense
+                    :value="props.row.staffID"
+                    :label="props.row.staffNameLabel"
+                    icon="engineering" 
+                    color="primary"
+                    :disabled="this.store.assignedCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
                   >
-                    <q-item-section>
-                      <q-item-label>{{staff.staffId}}: {{staff.name}}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-              <q-btn
-                dense
-                :color="store.assignedCheck[this.store.requestList.indexOf(props.row)] ? 'green-8' : 'grey-8'"
-                :icon="store.assignedCheck[this.store.requestList.indexOf(props.row)] ? 'check' : 'unchecked'"
-                @click="onAssigned(props.row)"
-                :disabled="this.store.assignedCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
-              />
-              <q-btn
-                class="q-mx-sm"
-                dense
-                color="red" 
-                icon="not_interested" 
-                @click="onReject(props.row)"
-                :disabled="this.store.disableCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
-              />
-            </div>
-          </q-td>
-        </template>
-      </q-table>
+                    <q-list>
+                      <q-item 
+                        clickable 
+                        v-close-popup 
+                        @click="props.row.staffNameLabel = staff.name, props.row.staffID = staff.staffId"
+                        v-for="(staff,index) in renewStaffs"
+                        :key="index"
+                      >
+                        <q-item-section>
+                          <q-item-label>{{staff.staffId}}: {{staff.name}}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                  <q-btn
+                    dense
+                    :color="store.assignedCheck[this.store.requestList.indexOf(props.row)] ? 'green-8' : 'grey-8'"
+                    :icon="store.assignedCheck[this.store.requestList.indexOf(props.row)] ? 'check' : 'unchecked'"
+                    @click="onAssigned(props.row)"
+                    :disabled="this.store.assignedCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
+                  />
+                  <q-btn
+                    class="q-mx-sm"
+                    dense
+                    color="red" 
+                    icon="not_interested" 
+                    @click="onReject(props.row)"
+                    :disabled="this.store.disableCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
+                  />
+                </div>
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>

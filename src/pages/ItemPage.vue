@@ -1,349 +1,353 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="q-pa-md" style="max-width: 520px">
-      <!-- Category section -->
-      <q-list class="rounded-borders">
-        <q-expansion-item
-          class="shadow-1 overflow-hidden"
-          style="border-radius: 30px"
-          icon="category"
-          label="Category List"
-          header-class="bg-primary text-white"
-          expand-icon-class="text-white"
-        >
-          <q-card>
-            <q-card-section>
-              <q-table
-                title="Category"
-                :rows="store.categories"
-                :columns="categoryColumns"
-                row-key="id"
-              >
-                <template #top-right>
-                  <q-form
-                    ref="refCategory"
-                    @submit.prevent="onAddCategory()"
-                    @reset="onResetCategory()"
-                    class="q-gutter-sm row"
-                    dense
+  <q-page>
+    <div class="row q-mt-lg">
+      <div class="col">
+        <div style="max-width:650px; text-align:center; margin-left:auto; margin-right:auto">
+          <!-- Category section -->
+          <q-list class="rounded-borders">
+            <q-expansion-item
+              class="shadow-1 overflow-hidden"
+              style="border-radius: 30px"
+              icon="category"
+              label="Category List"
+              header-class="bg-primary text-white"
+              expand-icon-class="text-white"
+            >
+              <q-card>
+                <q-card-section>
+                  <q-table
+                    title="Category"
+                    :rows="store.categories"
+                    :columns="categoryColumns"
+                    row-key="id"
                   >
-                    <q-input
-                      outlined
-                      v-model="category"
-                      label="Category *"
-                      lazy-rules
-                      :rules="[ val => val && val.length > 0 || 'Please type something']"
-                      dense
-                      class="q-py-md q-px-xs"
-                      style="size: 15px"
-                    />
-                    <div class="q-py-md">
-                      <q-btn label="Add" type="submit" color="primary"/>
-                      <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-                    </div>
-                  </q-form>
-                </template>
-                <template #body="props">
-                  <q-tr :class="[store.visibleCategory[this.store.categories.indexOf(props.row)] ? 'inv' : '']">
-                    <q-td key="categoryId" :props="props">
-                      {{ props.row.categoryId }}
-                    </q-td>
-                    <q-td key="name" :props="props">
-                      {{ props.row.name }}
-                      <q-popup-edit 
-                        v-if="editCategory[this.store.categories.indexOf(props.row)]"
-                        v-model="props.row.name" 
-                        v-slot="scope"
+                    <template #top-right>
+                      <q-form
+                        ref="refCategory"
+                        @submit.prevent="onAddCategory()"
+                        @reset="onResetCategory()"
+                        class="q-gutter-sm row"
+                        dense
                       >
-                      <q-input type="text" 
-                        v-model="scope.value" 
-                        dense 
-                        autofocus 
-                        @keyup.enter="scope.set"
-                        v-on:keyup.enter="onAfterEditCategory(props.row)"
-                      />
-
-                      </q-popup-edit>
-                    </q-td>
-                    <q-td key="actions" :props="props">
-                      <div class="q-ma-sm">
-                        <q-btn
-                          class="q-pa-sm q-mx-sm"
-                          :icon="editCategory[this.store.categories.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                          :color="editCategory[this.store.categories.indexOf(props.row)] ? 'primary' : 'red'"
-                          @click="onEditCategory(props.row)" 
-                          :disabled="store.visibleCategory[this.store.categories.indexOf(props.row)]? '':disabled"
-                        >
-                          <q-tooltip class="bg-accent">Edit</q-tooltip>
-                        </q-btn>
-                        <q-btn 
-                          class="q-pa-sm"
-                          icon="delete"
-                          color="red"
-                          @click="onDeleteCategory(props.row)" 
-                          :disabled="store.visibleCategory[this.store.categories.indexOf(props.row)]? '':disabled"
-                        >
-                          <q-tooltip class="bg-accent">Delete</q-tooltip>
-                        </q-btn>
-                        <q-icon 
-                          :name="store.visibleCategory[this.store.categories.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
-                          class="cursor-pointer q-ma-sm"
-                          @click="onVisibleCategory(props.row)"
-                          size="sm"
-                        />
-                      </div>
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
-      <br />
-      <!-- Product section -->
-      <q-list class="rounded-borders">
-        <q-expansion-item
-          class="shadow-1 overflow-hidden"
-          style="border-radius: 30px"
-          icon="recycling"
-          label="Product List"
-          header-class="bg-primary text-white"
-          expand-icon-class="text-white"
-        >
-          <q-card>
-            <q-card-section>
-              <q-table
-                title="Products"
-                :rows="store.products"
-                :columns="productColumns"
-                row-key="name"
-              >
-                <template #top-right="props">
-                  <q-form
-                    ref="refProduct"
-                    @submit.prevent="onAddProduct(props.row)"
-                    @reset="onResetProduct()"
-                    class="q-gutter-sm row"
-                    dense
-                    :props="props"
-                  >
-                    <q-input
-                      outlined
-                      v-model="product"
-                      label="Product *"
-                      lazy-rules
-                      :rules="[ val => val && val.length > 0 || 'Please type something']"
-                      dense
-                      class="q-py-md q-px-xs"
-                      style="size: 10px"
-                    />
-                    <q-input
-                      outlined
-                      type="number"
-                      v-model="price"
-                      label="Price/kg *"
-                      lazy-rules
-                      :rules="[
-                        val => val !== null && val !== '' || 'Please type price',
-                        val => val > 0  || 'Please type a valid price'
-                      ]"
-                      dense
-                      class="q-py-md q-px-xs"
-                    />
-                    <q-btn-dropdown
-                      key="defaultLabel" 
-                      :props="props"
-                      color="primary" 
-                      :label="defaultLabel"
-                      lazy-rules
-                      :rules="[rule]"
-                      aria-errormessage="errormessage"
-                    >
-                      <q-list>
-                        <q-item 
-                          v-for="(category, index) in renewCategory"
-                          :key="index"
-                          clickable v-close-popup 
-                          @click="defaultLabel= category.name"
-                        >
-                          <q-item-section>
-                            <q-item-label>{{ category.name }}</q-item-label>
-                          </q-item-section>
-                        </q-item>
-                      </q-list>
-                    </q-btn-dropdown>
-                    <div align="center">
-                      <q-btn label="Add" type="submit" color="primary" />
-                      <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-                    </div>
-                  </q-form>
-                </template>
-                <template #body="props">
-                  <q-tr :class="[store.visibleProduct[this.store.products.indexOf(props.row)] ? 'inv' : '']">
-                    <q-td key="productId" :props="props">
-                      {{ props.row.productId }}
-                    </q-td>
-                    <q-td key="name" :props="props">
-                      {{ props.row.name }}
-                      <q-popup-edit 
-                        v-if="editProduct[this.store.products.indexOf(props.row)]"
-                        v-model.number="props.row.name"
-                        buttons v-slot="scope"
-                      >
-                        <q-input type="text" v-model="scope.value" dense autofocus @keyup.enter="scope.set" 
+                        <q-input
+                          outlined
+                          v-model="category"
+                          label="Category *"
                           lazy-rules
                           :rules="[ val => val && val.length > 0 || 'Please type something']"
-                        />
-                      </q-popup-edit>
-                    </q-td>
-                    <q-td key="price" :props="props">
-                      {{ props.row.price }}
-                      <q-popup-edit 
-                        v-if="editProduct[this.store.products.indexOf(props.row)]"
-                        v-model.number="props.row.price"
-                        buttons 
-                        v-slot="scope"
-                        :validate="onProductPriceValidation"
-                        @hide="onProductPriceValidation"
-                      >
-                      <q-input 
-                        type="number" 
-                        v-model.number="scope.value" 
-                        :error="errorPrice"
-                        :error-message="errorMessagePrice"
-                        dense 
-                        autofocus 
-                        @keyup.enter="scope.set" 
-                      />
-                      </q-popup-edit>
-                    </q-td>
-                    <q-td key="category" :props="props">
-                      {{ props.row.category }}
-                    </q-td>
-                    <q-td key="actions" :props="props">
-                      <div class="q-pa-sm">
-                        <q-btn 
-                          class="q-pa-sm q-mx-sm" 
-                          :icon="editProduct[this.store.products.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                          :color="editProduct[this.store.products.indexOf(props.row)] ? 'primary' : 'red'"
-                          @click="onEditProduct(props.row)"
-                          :disabled="store.visibleProduct[this.store.products.indexOf(props.row)]? '':disabled"
-                        />
-                        <q-btn 
-                          class="q-pa-sm" 
-                          color="red" 
-                          icon="delete" 
-                          @click="onDeleteProduct(props.row)" 
-                          :disabled="store.visibleProduct[this.store.products.indexOf(props.row)]? '':disabled"
-                        />
-                        <q-icon 
-                          :name="store.visibleProduct[this.store.products.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
-                          class="cursor-pointer q-ma-sm"
-                          @click="onVisibleProduct(props.row)"
-                          size="sm"
-                        />
-                      </div>
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
-      <br />
-      <!-- Staff section -->
-      <q-list class="rounded-borders">
-        <q-expansion-item
-          class="shadow-1 overflow-hidden"
-          style="border-radius: 30px"
-          icon="engineering"
-          label="Staff List"
-          header-class="bg-primary text-white"
-          expand-icon-class="text-white"
-        >
-          <q-card>
-            <q-card-section>
-              <q-table
-                class="q-ma-md"
-                title="Staff List"
-                :rows="store.staffs"
-                :columns="staffColumns"
-                row-key="name"
-              >
-                <template #top-right>
-                  <q-form
-                    ref="refStaff"
-                    @submit.prevent="onAddStaff"
-                    @reset="onResetStaff"
-                    class="q-gutter-sm row"
-                    dense
-                  >
-                    <q-input
-                      filled
-                      v-model="staffName"
-                      label="Staff *"
-                      lazy-rules
-                      :rules="[ val => val && val.length > 0 || 'Please type something']"
-                      dense
-                      class="q-py-md q-px-xs"
-                    />
-                    <div class="q-py-md">
-                      <q-btn label="Add" type="submit" color="primary"/>
-                      <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-                    </div>
-                  </q-form>
-                </template>
-                
-                <template #body="props">
-                  <q-tr 
-                    :props="props" 
-                    :class="[this.store.visibleStaff[this.store.staffs.indexOf(props.row)] ? 'inv' : '']"
-                  >
-                    <q-td key="staffId" :props="props">
-                      {{ props.row.staffId }}
-                    </q-td>
-                    <q-td key="name" :props="props">
-                      {{ props.row.name }}
-                      <q-popup-edit 
-                        v-if="editStaff[this.store.staffs.indexOf(props.row)]"
-                        v-model.number="props.row.name"
-                        buttons v-slot="scope"
-                      >
-                        <q-input type="text" v-model="scope.value" dense autofocus @keyup.enter="scope.set" />
-                      </q-popup-edit>
-                    </q-td>
-                    <q-td key="actions" :props="props">
-                      <div class="q-pa-sm">
-                        <q-btn 
-                          class="q-ma-sm q-pa-sm"
-                          :icon="editStaff[this.store.staffs.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                          :color="editStaff[this.store.staffs.indexOf(props.row)] ? 'blue' : 'red'"
-                          @click="onEditStaff(props.row)"
                           dense
-                          :disabled="store.visibleStaff[this.store.staffs.indexOf(props.row)]? '':disabled"
-                        >
-                          <q-tooltip class="bg-accent">Edit</q-tooltip>
-                        </q-btn>
-                        <q-btn class="q-pa-sm" name="delete" icon='delete' color="red" @click="onDeleteStaff(props.row)" :disabled="store.visibleStaff[this.store.staffs.indexOf(props.row)]? '':disabled">
-                          <q-tooltip class="bg-accent">Delete</q-tooltip>
-                        </q-btn>
-                        <q-icon 
-                          :name="store.visibleStaff[this.store.staffs.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
-                          class="cursor-pointer q-ma-sm"
-                          @click="onVisibleStaff(props.row)"
-                          size="sm"
+                          class="q-py-md q-px-xs"
+                          style="size: 15px"
                         />
-                      </div>
-                    </q-td>
-                  </q-tr>
-                </template>
-              </q-table>
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
+                        <div class="q-py-md">
+                          <q-btn label="Add" type="submit" color="primary"/>
+                          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                        </div>
+                      </q-form>
+                    </template>
+                    <template #body="props">
+                      <q-tr :class="[store.visibleCategory[this.store.categories.indexOf(props.row)] ? 'inv' : '']">
+                        <q-td key="categoryId" :props="props">
+                          {{ props.row.categoryId }}
+                        </q-td>
+                        <q-td key="name" :props="props">
+                          {{ props.row.name }}
+                          <q-popup-edit 
+                            v-if="editCategory[this.store.categories.indexOf(props.row)]"
+                            v-model="props.row.name" 
+                            v-slot="scope"
+                          >
+                          <q-input type="text" 
+                            v-model="scope.value" 
+                            dense 
+                            autofocus 
+                            @keyup.enter="scope.set"
+                            v-on:keyup.enter="onAfterEditCategory(props.row)"
+                          />
+
+                          </q-popup-edit>
+                        </q-td>
+                        <q-td key="actions" :props="props">
+                          <div class="q-ma-sm">
+                            <q-btn
+                              class="q-pa-sm q-mx-sm"
+                              :icon="editCategory[this.store.categories.indexOf(props.row)] ? 'edit' : 'edit_off'"
+                              :color="editCategory[this.store.categories.indexOf(props.row)] ? 'primary' : 'red'"
+                              @click="onEditCategory(props.row)" 
+                              :disabled="store.visibleCategory[this.store.categories.indexOf(props.row)]? '':disabled"
+                            >
+                              <q-tooltip class="bg-accent">Edit</q-tooltip>
+                            </q-btn>
+                            <q-btn 
+                              class="q-pa-sm"
+                              icon="delete"
+                              color="red"
+                              @click="onDeleteCategory(props.row)" 
+                              :disabled="store.visibleCategory[this.store.categories.indexOf(props.row)]? '':disabled"
+                            >
+                              <q-tooltip class="bg-accent">Delete</q-tooltip>
+                            </q-btn>
+                            <q-icon 
+                              :name="store.visibleCategory[this.store.categories.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
+                              class="cursor-pointer q-ma-sm"
+                              @click="onVisibleCategory(props.row)"
+                              size="sm"
+                            />
+                          </div>
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </q-list>
+          <br />
+          <!-- Product section -->
+          <q-list class="rounded-borders">
+            <q-expansion-item
+              class="shadow-1 overflow-hidden"
+              style="border-radius: 30px"
+              icon="recycling"
+              label="Product List"
+              header-class="bg-primary text-white"
+              expand-icon-class="text-white"
+            >
+              <q-card>
+                <q-card-section>
+                  <q-table
+                    title="Products"
+                    :rows="store.products"
+                    :columns="productColumns"
+                    row-key="name"
+                  >
+                    <template #top-right="props">
+                      <q-form
+                        ref="refProduct"
+                        @submit.prevent="onAddProduct(props.row)"
+                        @reset="onResetProduct()"
+                        class="q-gutter-sm row"
+                        dense
+                        :props="props"
+                      >
+                        <q-input
+                          outlined
+                          v-model="product"
+                          label="Product *"
+                          lazy-rules
+                          :rules="[ val => val && val.length > 0 || 'Please type something']"
+                          dense
+                          class="q-py-md q-px-xs"
+                          style="size: 10px"
+                        />
+                        <q-input
+                          outlined
+                          type="number"
+                          v-model="price"
+                          label="Price/kg *"
+                          lazy-rules
+                          :rules="[
+                            val => val !== null && val !== '' || 'Please type price',
+                            val => val > 0  || 'Please type a valid price'
+                          ]"
+                          dense
+                          class="q-py-md q-px-xs"
+                        />
+                        <q-btn-dropdown
+                          key="defaultLabel" 
+                          :props="props"
+                          color="primary" 
+                          :label="defaultLabel"
+                          lazy-rules
+                          :rules="[rule]"
+                          aria-errormessage="errormessage"
+                        >
+                          <q-list>
+                            <q-item 
+                              v-for="(category, index) in renewCategory"
+                              :key="index"
+                              clickable v-close-popup 
+                              @click="defaultLabel= category.name"
+                            >
+                              <q-item-section>
+                                <q-item-label>{{ category.name }}</q-item-label>
+                              </q-item-section>
+                            </q-item>
+                          </q-list>
+                        </q-btn-dropdown>
+                        <div align="center">
+                          <q-btn label="Add" type="submit" color="primary" />
+                          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                        </div>
+                      </q-form>
+                    </template>
+                    <template #body="props">
+                      <q-tr :class="[store.visibleProduct[this.store.products.indexOf(props.row)] ? 'inv' : '']">
+                        <q-td key="productId" :props="props">
+                          {{ props.row.productId }}
+                        </q-td>
+                        <q-td key="name" :props="props">
+                          {{ props.row.name }}
+                          <q-popup-edit 
+                            v-if="editProduct[this.store.products.indexOf(props.row)]"
+                            v-model.number="props.row.name"
+                            buttons v-slot="scope"
+                          >
+                            <q-input type="text" v-model="scope.value" dense autofocus @keyup.enter="scope.set" 
+                              lazy-rules
+                              :rules="[ val => val && val.length > 0 || 'Please type something']"
+                            />
+                          </q-popup-edit>
+                        </q-td>
+                        <q-td key="price" :props="props">
+                          {{ props.row.price }}
+                          <q-popup-edit 
+                            v-if="editProduct[this.store.products.indexOf(props.row)]"
+                            v-model.number="props.row.price"
+                            buttons 
+                            v-slot="scope"
+                            :validate="onProductPriceValidation"
+                            @hide="onProductPriceValidation"
+                          >
+                          <q-input 
+                            type="number" 
+                            v-model.number="scope.value" 
+                            :error="errorPrice"
+                            :error-message="errorMessagePrice"
+                            dense 
+                            autofocus 
+                            @keyup.enter="scope.set" 
+                          />
+                          </q-popup-edit>
+                        </q-td>
+                        <q-td key="category" :props="props">
+                          {{ props.row.category }}
+                        </q-td>
+                        <q-td key="actions" :props="props">
+                          <div class="q-pa-sm">
+                            <q-btn 
+                              class="q-pa-sm q-mx-sm" 
+                              :icon="editProduct[this.store.products.indexOf(props.row)] ? 'edit' : 'edit_off'"
+                              :color="editProduct[this.store.products.indexOf(props.row)] ? 'primary' : 'red'"
+                              @click="onEditProduct(props.row)"
+                              :disabled="store.visibleProduct[this.store.products.indexOf(props.row)]? '':disabled"
+                            />
+                            <q-btn 
+                              class="q-pa-sm" 
+                              color="red" 
+                              icon="delete" 
+                              @click="onDeleteProduct(props.row)" 
+                              :disabled="store.visibleProduct[this.store.products.indexOf(props.row)]? '':disabled"
+                            />
+                            <q-icon 
+                              :name="store.visibleProduct[this.store.products.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
+                              class="cursor-pointer q-ma-sm"
+                              @click="onVisibleProduct(props.row)"
+                              size="sm"
+                            />
+                          </div>
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </q-list>
+          <br />
+          <!-- Staff section -->
+          <q-list class="rounded-borders">
+            <q-expansion-item
+              class="shadow-1 overflow-hidden"
+              style="border-radius: 30px"
+              icon="engineering"
+              label="Staff List"
+              header-class="bg-primary text-white"
+              expand-icon-class="text-white"
+            >
+              <q-card>
+                <q-card-section>
+                  <q-table
+                    class="q-ma-md"
+                    title="Staff List"
+                    :rows="store.staffs"
+                    :columns="staffColumns"
+                    row-key="name"
+                  >
+                    <template #top-right>
+                      <q-form
+                        ref="refStaff"
+                        @submit.prevent="onAddStaff"
+                        @reset="onResetStaff"
+                        class="q-gutter-sm row"
+                        dense
+                      >
+                        <q-input
+                          filled
+                          v-model="staffName"
+                          label="Staff *"
+                          lazy-rules
+                          :rules="[ val => val && val.length > 0 || 'Please type something']"
+                          dense
+                          class="q-py-md q-px-xs"
+                        />
+                        <div class="q-py-md">
+                          <q-btn label="Add" type="submit" color="primary"/>
+                          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+                        </div>
+                      </q-form>
+                    </template>
+                    
+                    <template #body="props">
+                      <q-tr 
+                        :props="props" 
+                        :class="[this.store.visibleStaff[this.store.staffs.indexOf(props.row)] ? 'inv' : '']"
+                      >
+                        <q-td key="staffId" :props="props">
+                          {{ props.row.staffId }}
+                        </q-td>
+                        <q-td key="name" :props="props">
+                          {{ props.row.name }}
+                          <q-popup-edit 
+                            v-if="editStaff[this.store.staffs.indexOf(props.row)]"
+                            v-model.number="props.row.name"
+                            buttons v-slot="scope"
+                          >
+                            <q-input type="text" v-model="scope.value" dense autofocus @keyup.enter="scope.set" />
+                          </q-popup-edit>
+                        </q-td>
+                        <q-td key="actions" :props="props">
+                          <div class="q-pa-sm">
+                            <q-btn 
+                              class="q-ma-sm q-pa-sm"
+                              :icon="editStaff[this.store.staffs.indexOf(props.row)] ? 'edit' : 'edit_off'"
+                              :color="editStaff[this.store.staffs.indexOf(props.row)] ? 'blue' : 'red'"
+                              @click="onEditStaff(props.row)"
+                              dense
+                              :disabled="store.visibleStaff[this.store.staffs.indexOf(props.row)]? '':disabled"
+                            >
+                              <q-tooltip class="bg-accent">Edit</q-tooltip>
+                            </q-btn>
+                            <q-btn class="q-pa-sm" name="delete" icon='delete' color="red" @click="onDeleteStaff(props.row)" :disabled="store.visibleStaff[this.store.staffs.indexOf(props.row)]? '':disabled">
+                              <q-tooltip class="bg-accent">Delete</q-tooltip>
+                            </q-btn>
+                            <q-icon 
+                              :name="store.visibleStaff[this.store.staffs.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
+                              class="cursor-pointer q-ma-sm"
+                              @click="onVisibleStaff(props.row)"
+                              size="sm"
+                            />
+                          </div>
+                        </q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
+          </q-list>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>

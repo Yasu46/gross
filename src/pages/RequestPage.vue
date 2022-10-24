@@ -1,175 +1,179 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="q-pa-md" style="max-width: 610px">
-      <h5>RequestForm</h5>
-      <q-form
-        @submit.prevent="onAddRequest()"
-        @reset="onResetRequest()"
-        class="q-gutter-md"
-        ref="refRequest"
-      >
-        <q-table
-          title="Product(s)"
-          class="q-ma-md row"
-          :rows="store.products"
-          :columns="productColumns"
-          row-key="name"
-        > 
-          <template #body="props">
-            <q-tr :props="props"
-              v-if="!this.store.visibleProduct[this.store.products.indexOf(props.row)]"
-            >
-              <q-td key="productId" :props="props">
-                {{ props.row.productId }}
-              </q-td>
-              <q-td key="name" :props="props">
-                {{ props.row.name }}
-              </q-td>
-              <q-td key="price" :props="props">
-                {{ props.row.price }} Bhat/kg
-              </q-td>
-              <q-td key="category" :props="props">
-                {{ props.row.category }}
-              </q-td>
-              <q-td key="weight" :props="props">
-                <q-input
-                  class="q-mx-xs q-mt-md"
-                  dense outlined 
-                  v-model="weight[this.store.products.indexOf(props.row)]"
-                  type="number" 
-                  label="weight/kg *"
-                  ref="weightValue"
-                  
-                />
-              </q-td>
-              <q-td key="actions">
-                <div>
-                  <q-icon 
-                    class="cursor-pointer" 
-                    :name="checkProduct[this.store.products.indexOf(props.row)] ? 'check_circle' : 'radio_button_unchecked'"
-                    :color="checkProduct[this.store.products.indexOf(props.row)] ? 'green' : 'black'"
-                    size="sm"
-                    @click="onAddProductBtn(props.row)"
-                  />
-                </div>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-
-        <q-list style="width: 200px" dense bordered padding class="rounded-borders">
-          <q-item clickable v-ripple
-            v-for="weight in weights"
-            :key="weight"
+  <q-page>
+    <div class="row">
+      <div class="col">
+        <div style="max-width:650px; text-align:center; margin-left:auto; margin-right:auto">
+          <div class="text-h4 q-mt-xl q-pt-xl q-pb-lg">Request Form</div>
+          <q-form
+            @submit.prevent="onAddRequest()"
+            @reset="onResetRequest()"
+            class="q-pa-lg"
+            ref="refRequest"
           >
-            <q-item-section >
-              {{ weight }}
-            </q-item-section>
-          </q-item>
-          <hr>
-          <h7 class="q-mx-md">Total: {{ this.totalPrice() }} Baht</h7>
-        </q-list>
-
-        <div class="row">
-          <Datepicker
-            class="q-pr-sm"
-            v-model="date"
-            :minDate="new Date()"
-            placeholder="Date for pick up"
-            :disabledWeekDays="[6, 0]"
-            :enableTimePicker="false"
-          />
-          <Datepicker
-            v-model="time"
-            :minTime="{ hours: startTime() }"
-            :maxTime="{ hours:  17 }"
-            placeholder="Time for pick up"
-            :is24="false"
-            timePicker='HH:mm'
-          />
-        </div>
-
-        <div v-if="!store.login">
-          <q-input v-model="store.email"
-            outlined dense
-            type="text" 
-            label="Your Email"
-            lazy-rules
-            :rules="[ emailValidate, requiredValidate ]"
-          />
-
-          <q-input 
-            outlined 
-            v-model="store.address" 
-            type="address" 
-            label="Address" 
-            dense
-            lazy-rules
-            :rules="[
-              val => val !== null && val !== '' || 'Please type address',
-            ]"
-          />
-        </div>
-    
-        <div class="q-py-xs">
-          <q-btn label="Submit" type="submit" color="primary" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-        </div>
-      </q-form>
-
-      <div class="q-my-md" v-if="store.login">
-        <q-table
-          title="History"
-          :rows="store.history"
-          :columns="historyColumns"
-          row-key="name"
-        > 
-          <template #body-cell-status="props">
-            <q-td :props="props">
-              <q-badge :color="this.store.statusColor(props.row)">
-                {{props.row.status}}
-              </q-badge>
-            </q-td>
-          </template>
-          
-        </q-table>
-      </div>
-
-      <q-dialog v-model="alert">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">Successed request</div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-none">
-            <div class="text-h6">
-              
+            <q-table
+              title="Product(s)"
+              class="q-mb-md"
+              :rows="store.products"
+              :columns="productColumns"
+              row-key="name"
+            >
+              <template #body="props">
+                <q-tr :props="props"
+                  v-if="!this.store.visibleProduct[this.store.products.indexOf(props.row)]"
+                >
+                  <q-td key="productId" :props="props">
+                    {{ props.row.productId }}
+                  </q-td>
+                  <q-td key="name" :props="props">
+                    {{ props.row.name }}
+                  </q-td>
+                  <q-td key="price" :props="props">
+                    {{ props.row.price }} B/kg
+                  </q-td>
+                  <q-td key="category" :props="props">
+                    {{ props.row.category }}
+                  </q-td>
+                  <q-td key="weight" :props="props">
+                    <q-input
+                      class="q-mt-md"
+                      dense outlined 
+                      v-model="weight[this.store.products.indexOf(props.row)]"
+                      type="number" 
+                      label="weight/kg *"
+                      ref="weightValue"
+                    />
+                  </q-td>
+                  <q-td key="actions">
+                    <div>
+                      <q-icon 
+                        class="cursor-pointer" 
+                        :name="checkProduct[this.store.products.indexOf(props.row)] ? 'check_circle' : 'radio_button_unchecked'"
+                        :color="checkProduct[this.store.products.indexOf(props.row)] ? 'green' : 'black'"
+                        size="sm"
+                        @click="onAddProductBtn(props.row)"
+                      />
+                    </div>
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+            <q-list style="width: 200px" dense bordered padding class="rounded-borders q-mb-md">
+              <q-item clickable v-ripple
+                v-for="weight in weights"
+                :key="weight"
+              >
+                <q-item-section >
+                  {{ weight }}
+                </q-item-section>
+              </q-item>
+              <hr>
+              <h7 class="q-mx-md">Total: {{ this.totalPrice() }} Baht</h7>
+            </q-list>
+            <div class="row q-mb-md">
+              <div class="col">
+                <Datepicker
+                  class="q-pr-sm"
+                  v-model="date"
+                  :minDate="new Date()"
+                  placeholder="Date for pick up"
+                  :disabledWeekDays="[6, 0]"
+                  :enableTimePicker="false"
+                />
+              </div>
+              <div class="col">
+                <Datepicker
+                  v-model="time"
+                  :minTime="{ hours: startTime() }"
+                  :maxTime="{ hours:  17 }"
+                  placeholder="Time for pick up"
+                  :is24="false"
+                  timePicker='HH:mm'
+                />
+              </div>
             </div>
-          </q-card-section>
+            <div v-if="!store.login">
+              <q-input v-model="store.email"
+                outlined dense
+                type="text" 
+                label="Your Email"
+                lazy-rules
+                :rules="[ emailValidate, requiredValidate ]"
+              />
 
-          <q-card-actions align="right">
-            <q-btn flat label="OK" color="primary" v-close-popup />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <q-dialog v-model="confirm">
-        <q-card>
-          <q-card-section>
-          <div class="text-h6">Invalid request</div>
-          </q-card-section>
+              <q-input 
+                outlined 
+                v-model="store.address" 
+                type="address" 
+                label="Address" 
+                dense
+                lazy-rules
+                :rules="[
+                  val => val !== null && val !== '' || 'Please type address',
+                ]"
+              />
+            </div>
   
-          <q-card-section class="q-pt-none">
-            <div class="text-h6">
-              Please type correct information
+            <div class="q-py-xs">
+              <q-btn label="Submit" type="submit" color="primary" />
+              <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
             </div>
-          </q-card-section>
+          </q-form>
+          <div class="q-pa-lg" v-if="store.login">
+            <q-table
+              title="History"
+              :rows="store.history"
+              :columns="historyColumns"
+              row-key="name"
+              class=""
+            > 
+              <template #body-cell-status="props">
+                <q-td :props="props">
+                  <q-badge :color="this.store.statusColor(props.row)">
+                    {{props.row.status}}
+                  </q-badge>
+                </q-td>
+              </template>
+        
+            </q-table>
+          </div>
 
-          <q-card-actions align="right">
-            <q-btn flat label="OK" color="primary" v-close-popup />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+          <q-dialog v-model="alert">
+            <q-card>
+              <q-card-section>
+                <div class="text-h6">Successed request</div>
+              </q-card-section>
+
+              <q-card-section class="q-pt-none">
+                <div class="text-h6">
+                  
+                </div>
+              </q-card-section>
+
+              <q-card-actions align="right">
+                <q-btn flat label="OK" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+
+          <q-dialog v-model="confirm">
+            <q-card>
+              <q-card-section>
+              <div class="text-h6">Invalid request</div>
+              </q-card-section>
+      
+              <q-card-section class="q-pt-none">
+                <div class="text-h6">
+                  Please type correct information
+                </div>
+              </q-card-section>
+
+              <q-card-actions align="right">
+                <q-btn flat label="OK" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
@@ -188,7 +192,7 @@ export default {
     return {
       store: useItemStore(),
       productColumns: [
-        { name: 'productId', label: 'Product ID', field: 'productId', align: 'left'},
+        { name: 'productId', label: 'ID', field: 'productId', align: 'left'},
         { name: 'name', label: 'Name', field: 'name',align: 'left',  },
         { name: 'price', label: 'Price', field: 'price',align: 'center',  },
         { name: 'category', label: 'Category', field: 'category',align: 'center',  },

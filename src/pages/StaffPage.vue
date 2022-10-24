@@ -1,27 +1,32 @@
 <template>
-  <q-page class="flex flex-center">
-    <div class="q-pa-md" style="width: 700px">
-      <q-table
-        title="To-do List"
-        :rows="store.todoList"
-        :columns="todoColumns"
-        row-key="name"
-      > 
-        <template #body-cell-status="props">
-          <q-td :props="props">
-            <q-badge :color="this.store.statusColor(props.row)">
-              {{props.row.status}}
-            </q-badge>
-          </q-td>
-        </template>
-        <template #body-cell-action="props">
-          <q-td :props="props">
-            <div class="q-pa-sm">
-              <q-btn class="q-pa-xs" color="primary" label="Completed!" @click="onClick(props.row)" />
-            </div>
-          </q-td>
-        </template>
-      </q-table>
+  <q-page>
+    <div class="row">
+      <div class="col">
+        <div style="max-width:650px; text-align:center; margin-left:auto; margin-right:auto">
+          <q-table
+            class="q-ma-md "
+            title="To-do List"
+            :rows="store.todoList"
+            :columns="todoColumns"
+            row-key="name"
+          > 
+            <template #body-cell-status="props">
+              <q-td :props="props">
+                <q-badge :color="this.store.statusColor(props.row)">
+                  {{props.row.status}}
+                </q-badge>
+              </q-td>
+            </template>
+            <template #body-cell-action="props">
+              <q-td :props="props">
+                <div class="q-pa-sm">
+                  <q-btn class="q-pa-xs" color="primary" label="Completed!" @click="onClick(props.row)" />
+                </div>
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+      </div>
     </div>
   </q-page>
 </template>
