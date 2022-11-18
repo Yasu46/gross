@@ -5,14 +5,6 @@
         <q-icon name="account_circle"
         color="grey-6" size="4rem"/>
       </div>
-      <!-- <div class="flex flex-center" v-else>
-        <q-img
-          :src="imageUrl"
-          :ratio="4/3"
-          spinner-color="primary"
-          spinner-size="82px"
-        />
-      </div> -->
       <q-card-section>
         <q-form
           @submit.prevent="onSubmit"
@@ -51,14 +43,6 @@
             />
           </div>
           <div>
-            <q-select v-model="role"
-              :options="options" 
-              label="Your role"
-              lazy-rules
-              :rules="[(val) => (val && val.length > 0) || 'Field is required']"
-            />
-          </div>
-          <div>
             <q-input v-model="password" 
               :type="isPwd ? 'password' : 'text'" 
               label="Your Password"
@@ -80,31 +64,24 @@
         </q-form>
       </q-card-section>
     </q-card>
-    <!-- <DialogComponent 
-      v-model="showDialog"
-      :propDialog="dialog"
-    >
-    
-    </DialogComponent> -->
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
 import { emailValidate, requiredValidate } from "../utils/validations"
+import { userStore } from "../stores/user-store"
+import { Notify } from "quasar"
 
 
 export default defineComponent({
   name: 'SignUpPage',
   data() {
     return {
+      store: userStore(),
       name: '',
       email: '',
       address: '',
-      role: '',
-      options: [
-        'Customer', 'Staff'
-      ],
       password: '',
       isPwd: false,
       usernameCaption: {
@@ -119,25 +96,28 @@ export default defineComponent({
     emailValidate,
     requiredValidate,
     onSubmit() {
-      let role = false;
-      if(this.role == 'Customer') role = true
-      else if(this.role == 'Staff') role = false
       const data = {
         name: this.name,
         email: this.email,
         address: this.address,
-        role: role,
+        visible: false,
         password: this.password,
       }
       //console.log(data);
       this.$api.post("/users/signup", data)
       .then((res) => {
         if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "SignUp successfully."
+          })
+          this.store.userid = res.data.id
+          this.store.name = res.data.name
           console.log("created successfully");
+          this.$router.push("/login");
         }
       });
-      if(role == true) this.$router.push("/request");
-      else if(role == false) this.$router.push("/staff");
+      this.$refs.myRegisterForm.reset();
     },
     onReset() {
       this.name = null

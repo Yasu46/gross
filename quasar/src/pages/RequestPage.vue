@@ -28,8 +28,8 @@
                   <q-td key="price" :props="props">
                     {{ props.row.price }} B/kg
                   </q-td>
-                  <q-td key="category_id" :props="props">
-                    {{ props.row.category_id }}
+                  <q-td key="category" :props="props">
+                    {{ props.row.category }}
                   </q-td>
                   <q-td key="weight" :props="props">
                     <q-input
@@ -137,14 +137,14 @@ export default defineComponent({
         { name: 'id', label: 'ID', field: 'id', align: 'left'},
         { name: 'name', label: 'Name', field: 'name',align: 'left',  },
         { name: 'price', label: 'Price', field: 'price',align: 'center',  },
-        { name: 'category_id', label: 'Category_id', field: 'category_id',align: 'center',  },
+        { name: 'category', label: 'Category', field: 'category',align: 'center',  },
         { name: 'weight', label: 'Weight', field: 'weight',align: 'center',  },
         { name: 'actions', label: 'Actions', field: 'actions', align: 'center', }
       ],
       histories: [],
       historyCols: [
         { name: 'id', label: 'Request ID', field: 'id', align: 'left'},
-        { name: 'user_id', label: 'User ID', field: 'user_id', align: 'left'},
+        // { name: 'user_id', label: 'User ID', field: 'user_id', align: 'left'},
         { name: 'total_price', label: 'Total Price', field: 'total_price', align: 'left'},
         { name: 'request_date', label: 'Date', field: 'request_date', align: 'left' },
         { name: 'status', label: 'Status', field: 'status', align: 'left' },
@@ -176,7 +176,8 @@ export default defineComponent({
       })
     },
     getAllHistories() {
-      this.$api.get('/requests')
+      console.log(this.store.getUserId)
+      this.$api.get(`/requests/${this.store.getUserId}`)
       .then((res) => {
         if (res.status == 200) {
           console.log(res.data);
@@ -188,8 +189,8 @@ export default defineComponent({
           type: "negative",
           message: "Unauthorized"
         })
-        this.store.clearStore()
-        this.$router.push("/login")
+        // this.store.clearStore()
+        // this.$router.push("/login")
       })
     },
     checkBtn(item) {

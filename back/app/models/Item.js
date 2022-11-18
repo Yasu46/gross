@@ -1,8 +1,4 @@
 const sql = require("./db");
-// const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
-// const scKey = require("../config/jwt.config");
-// const fs = require("fs");
 const { strictEqual } = require("assert");
 
 // Constructor
@@ -10,6 +6,7 @@ const Item = function (item) {
   this.name = item.name;
   this.price = item.price;
   this.category_id = item.category_id;
+  this.visible = item.visible;
 }
 // const expireTime = "1h";
 
@@ -20,9 +17,6 @@ Item.create = (newItem, result) => {
       result(err, null);
       return;
     }
-    // const token = jwt.sign({id: res.insertId}, scKey.secret, {
-    //   expiresIn: expireTime
-    // });
     console.log("Created item: ", {
       id: res.insertId,
       ...newItem
@@ -50,30 +44,19 @@ Item.checkItemName = (name, result) => {
   });
 };
 
-// User.login = (account, result) => {
-//   sql.query("SELECT * FROM users WHERE name='" + account.name + "'", (err, res) => {
+// Item.getAllRecords = (result) => {
+//   sql.query("SELECT * FROM items", (err, res) => {
 //     if(err) {
 //       console.log("Query error: " + err);
 //       result(err, null);
 //       return;
 //     }
-//     if(res.length) {
-//       if(account.password === res[0].password) {
-//         console.log("Login success.");
-//         result(null, res[0]);
-//         return;
-//       }else{
-//         console.log("Password invalid.");
-//         result({kind: "invalid_pass"}, null);
-//         return;
-//       }
-//     }
-//     result({kind: "not_found"}, null);
+//     result(null, res);
 //   });
 // }
 
 Item.getAllRecords = (result) => {
-  sql.query("SELECT * FROM items", (err, res) => {
+  sql.query("SELECT i.id, i.name, i.price, c.name AS category FROM items i INNER JOIN categories c ON i.category_id = c.id;", (err, res) => {
     if(err) {
       console.log("Query error: " + err);
       result(err, null);
@@ -83,32 +66,7 @@ Item.getAllRecords = (result) => {
   });
 }
 
-// const removeOldFileName = (id, result) => {
-//   sql.query("SELECT * FROM users WHERE id = ?", [id], (err, res) => {
-//     if(err) {
-//       console.log("Query error: " + err);
-//       result(err, null);
-//       return;
-//     }
-//     if(res.length) {
-//       let filepath = __basedir + "/assets/uploads/" + res[0].img;
-//       try {
-//         if(fs.existsSync(filepath)) {
-//           fs.unlink(filepath, (error) => {
-//             if(error) console.log("Error: " + error);
-//             else console.log("File: " + res[0].img + " was removed.")
-//           })
-//         }
-//         else console.log("File " + res[0].img + " not found.")
-//       } catch (error) {
-//         console.log("error catch: " + error);
-//       }
-//     } 
-//   });
-// };
-
 Item.updateByID = (id, data, result) => {
-  //removeOldFileName(id);
   sql.query("UPDATE items SET name=?, price=?, category_id=? WHERE id=?", 
   [data.name, data.price, data.category_id, id], (err, res) => {
     if(err) {
@@ -127,7 +85,6 @@ Item.updateByID = (id, data, result) => {
 };
 
 Item.remove = (id, result) => {
-  // removeOldFileName(id);
   sql.query("DELETE FROM items WHERE id = ?", id, (err, res) => {
     if(err) {
       console.group("Query error: " + err)

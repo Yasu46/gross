@@ -1,8 +1,4 @@
 const sql = require("./db");
-// const bcrypt = require("bcryptjs");
-// const jwt = require("jsonwebtoken");
-// const scKey = require("../config/jwt.config");
-// const fs = require("fs");
 const { strictEqual } = require("assert");
 
 // Constructor
@@ -11,9 +7,8 @@ const User = function (user) {
   this.email = user.email;
   this.address = user.address;
   this.password = user.password;
-  this.role = user.role;
+  this.visible = user.visible;
 }
-// const expireTime = "1h";
 
 User.create = (newUser, result) => {
   sql.query("INSERT INTO users SET ?", newUser, (err, res) => {
@@ -22,9 +17,6 @@ User.create = (newUser, result) => {
       result(err, null);
       return;
     }
-    // const token = jwt.sign({id: res.insertId}, scKey.secret, {
-    //   expiresIn: expireTime
-    // });
     console.log("Created user: ", {
       id: res.insertId,
       ...newUser
@@ -60,13 +52,8 @@ User.login = (account, result) => {
       return;
     }
     if(res.length) {
-      // const validPassword = bcrypt.compareSync(
-      //   account.password, res[0].password
-      // );
       if(account.password === res[0].password) {
-        //const token = jwt.sign({id: res.insertId}, scKey.secret, {expiresIn: expireTime});
         console.log("Login success.");
-        //res[0].accessToken = token;
         result(null, res[0]);
         return;
       }else{
@@ -81,6 +68,7 @@ User.login = (account, result) => {
 
 User.getAllRecords = (result) => {
   sql.query("SELECT * FROM users", (err, res) => {
+    console.log("bbb" + res)
     if(err) {
       console.log("Query error: " + err);
       result(err, null);
@@ -88,34 +76,21 @@ User.getAllRecords = (result) => {
     }
     result(null, res);
   });
+};
+
+User.getStaffRecords = (result) => {
+  sql.query("SELECT * FROM users WHERE role=false", (err, res) => {
+    console.log("bbb" + res)
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  })
 }
 
-// const removeOldFileName = (id, result) => {
-//   sql.query("SELECT * FROM users WHERE id = ?", [id], (err, res) => {
-//     if(err) {
-//       console.log("Query error: " + err);
-//       result(err, null);
-//       return;
-//     }
-//     if(res.length) {
-//       let filepath = __basedir + "/assets/uploads/" + res[0].img;
-//       try {
-//         if(fs.existsSync(filepath)) {
-//           fs.unlink(filepath, (error) => {
-//             if(error) console.log("Error: " + error);
-//             else console.log("File: " + res[0].img + " was removed.")
-//           })
-//         }
-//         else console.log("File " + res[0].img + " not found.")
-//       } catch (error) {
-//         console.log("error catch: " + error);
-//       }
-//     } 
-//   });
-// };
-
 User.updateByID = (id, data, result) => {
-  //removeOldFileName(id);
   sql.query("UPDATE users SET name=?, email=?, address=? WHERE id=?", 
   [data.name, data.email, data.address, id], (err, res) => {
     if(err) {
@@ -134,7 +109,6 @@ User.updateByID = (id, data, result) => {
 };
 
 User.remove = (id, result) => {
-  // removeOldFileName(id);
   sql.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
     if(err) {
       console.group("Query error: " + err)
@@ -149,4 +123,5 @@ User.remove = (id, result) => {
     result(null, {id: id})
   });
 };
+
 module.exports = User;

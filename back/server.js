@@ -23,6 +23,7 @@ app.get("/", (req, res) => {
 
 //app.use('/user', userRouter);
 require("./app/routes/userRoute")(app);
+require("./app/routes/staffRoute")(app);
 require("./app/routes/categoryRoute")(app);
 require("./app/routes/itemRoute")(app);
 require("./app/routes/requestRoute")(app);

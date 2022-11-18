@@ -1,4 +1,3 @@
-//const bcrypt = require("bcryptjs");
 const Category = require("../models/Category");
 const createNewCategory = (req, res) => {
   if (!req.body) {
@@ -6,9 +5,9 @@ const createNewCategory = (req, res) => {
       message: "Content can not be empty."
     });
   }
-  //const salt = bcrypt.genSaltSync(10);
   const CategoryObj = new Category({
-    name: req.body.name
+    name: req.body.name,
+    visible: req.body.name
   });
   Category.create(CategoryObj, (err, data) => {
     if(err) {
@@ -36,38 +35,6 @@ const validCategory = (req, res) => {
   });
 };
 
-// const login = (req, res) => {
-//   if (!req.body) {
-//     res.status(400).send({
-//       message: "Content can not be empty."
-//     });
-//   }
-
-//   const account = new User({
-//     name: req.body.name,
-//     password: req.body.password
-//   });
-//   console.log("aaa "+req.body);
-
-//   User.login(account, (err, data) => {
-//     if(err) {
-//       if(err.kind == "not_found") {
-//         res.status(401).send({
-//           message: "Not found " + req.body.name
-//         });
-//       } else if (err.kind == "invalid_pass") {
-//         res.status(401).send({
-//           message: "Invalid Password"
-//         });
-//       }else{
-//         res.status(500).send({
-//           message: "Error retriveing " + req.body.name
-//         });
-//       }
-//     }else res.send(data);
-//   });
-// };
-
 const getAllCategories = (req, res) => {
   Category.getAllRecords((err, data) => {
     if(err) {
@@ -83,7 +50,7 @@ const updateCategory = (req, res) => {
     res.status(400).send({ message: "Content can not be empty."});
   }
   const data = {
-    name: req.body.name
+    name: req.body.name,
   };
   Category.updateByID(req.params.id, data, (err, result) => {
     if(err) {
@@ -119,7 +86,6 @@ const deleteCategory = (req, res) => {
 module.exports = {
   createNewCategory,
   validCategory,
-  //login,
   getAllCategories,
   updateCategory,
   deleteCategory

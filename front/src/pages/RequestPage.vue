@@ -84,7 +84,7 @@
                 <Datepicker
                   v-model="time"
                   :minTime="{ hours: startTime() }"
-                  :maxTime="{ hours:  17 }"
+                  :maxTime="{ hours: 17 }"
                   placeholder="Time for pick up"
                   :is24="false"
                   timePicker='HH:mm'

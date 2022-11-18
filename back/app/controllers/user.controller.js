@@ -12,8 +12,8 @@ const createNewUser = (req, res) => {
     name: req.body.name,
     email: req.body.email,
     address: req.body.address,
+    visible: req.body.visible,
     password: req.body.password,
-    role: req.body.role
   });
   User.create(userObj, (err, data) => {
     if(err) {
@@ -76,6 +76,7 @@ const login = (req, res) => {
 
 const getAllUsers = (req, res) => {
   User.getAllRecords((err, data) => {
+    console.log("aaa" + data)
     if(err) {
       res.status(500).send({
         message: err.message || "Some error occured while creating."

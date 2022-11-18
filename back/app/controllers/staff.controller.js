@@ -1,29 +1,28 @@
-//const bcrypt = require("bcryptjs");
-const Item = require("../models/Item");
-const createNewItem = (req, res) => {
+const Staff = require("../models/Staff");
+const createNewStaff = (req, res) => {
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty."
     });
   }
+
   //const salt = bcrypt.genSaltSync(10);
-  const itemObj = new Item({
+  const staffObj = new Staff({
     name: req.body.name,
-    price: req.body.price,
-    category_id: req.body.category_id,
-    visible: req.body.visible,
+    visible: req.body.visible
   });
-  Item.create(itemObj, (err, data) => {
+  Staff.create(staffObj, (err, data) => {
     if(err) {
       res.status(500).send({
         message: err.message || "Some error occured while creating."
+
       })
     }else res.send(data)
   });
 }
 
-// const validItemname = (req, res) => {
-//   Item.checkItemName(req.params.us, (err, data) => {
+// const validUsername = (req, res) => {
+//   Staff.checkUserName(req.params.us, (err, data) => {
 //     if(err) {
 //       if(err.kind == "not_found") {
 //         res.send({
@@ -71,50 +70,49 @@ const createNewItem = (req, res) => {
 //   });
 // };
 
-const getAllItems = (req, res) => {
-  Item.getAllRecords((err, data) => {
+const getAllStaffs = (req, res) => {
+  Staff.getStaffRecords((err, data) => {
+    console.log(data)
     if(err) {
       res.status(500).send({
         message: err.message || "Some error occured while creating."
       })
     }else res.send(data);
-  });
-};
+  })
+}
 
-const updateItem = (req, res) => {
+const updateStaff = (req, res) => {
   if(!req.body) {
     res.status(400).send({ message: "Content can not be empty."});
   }
   const data = {
-    name: req.body.name,
-    price: req.body.price,
-    category_id: req.body.category_id
+    name: req.body.name
   };
-  Item.updateByID(req.params.id, data, (err, result) => {
+  Staff.updateByID(req.params.id, data, (err, result) => {
     if(err) {
       if(err.kind == "not_found") {
         res.status(401).send({
-          message: "Not found item id: " + req.params.id
+          message: "Not found user id: " + req.params.id
         });
       } else {
         res.status(500).send({
-          message: "Error update item id: " + req.params.id
+          message: "Error update user id: " + req.params.id
         });
       }
     } else res.send(result);
   });
 };
 
-const deleteItem = (req, res) => {
-  Item.remove(req.params.id, (err, result)=>{
+const deleteStaff = (req, res) => {
+  Staff.remove(req.params.id, (err, result)=>{
     if(err){
       if(err.kind == "not_found") {
         res.status(401).send({
-          message: "Not found item id: " + req.params.id
+          message: "Not found user id: " + req.params.id
         });
       }else{
         res.status(500).send({
-          message: "Error delete item id: " + req.params.id
+          message: "Error delete user id: " + req.params.id
         });
       }
     }
@@ -122,8 +120,11 @@ const deleteItem = (req, res) => {
   });
 }
 module.exports = {
-  createNewItem,
-  getAllItems,
-  updateItem,
-  deleteItem
+  createNewStaff,
+  // validUsername,
+  // login,
+  // getAllUsers,
+  getAllStaffs,
+  updateStaff,
+  deleteStaff
 }

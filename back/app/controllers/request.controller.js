@@ -1,4 +1,3 @@
-//const bcrypt = require("bcryptjs");
 const Request = require("../models/Request");
 const createNewRequest = (req, res) => {
   if (!req.body) {
@@ -7,7 +6,6 @@ const createNewRequest = (req, res) => {
     });
   }
 
-  //const salt = bcrypt.genSaltSync(10);
   const requestObj = new Request({
     user_id: req.body.user_id,
     total_price: req.body.total_price,
@@ -24,55 +22,6 @@ const createNewRequest = (req, res) => {
   });
 }
 
-const validRequest = (req, res) => {
-  Request.checkRequest(req.params.us, (err, data) => {
-    if(err) {
-      if(err.kind == "not_found") {
-        res.send({
-          message: "Not found " + req.params.us,
-          valid: true
-        })
-      }else{
-        res.status(500).send({
-          message: "Error retriveing " + req.params.us
-        });
-      }
-    }else res.send({record: data, valid: false});
-  });
-};
-
-// const login = (req, res) => {
-//   if (!req.body) {
-//     res.status(400).send({
-//       message: "Content can not be empty."
-//     });
-//   }
-
-//   const account = new User({
-//     name: req.body.name,
-//     password: req.body.password
-//   });
-//   console.log("aaa "+req.body);
-
-//   Request.login(account, (err, data) => {
-//     if(err) {
-//       if(err.kind == "not_found") {
-//         res.status(401).send({
-//           message: "Not found " + req.body.name
-//         });
-//       } else if (err.kind == "invalid_pass") {
-//         res.status(401).send({
-//           message: "Invalid Password"
-//         });
-//       }else{
-//         res.status(500).send({
-//           message: "Error retriveing " + req.body.name
-//         });
-//       }
-//     }else res.send(data);
-//   });
-// };
-
 const getAllRequests = (req, res) => {
   Request.getAllRecords((err, data) => {
     if(err) {
@@ -82,6 +31,16 @@ const getAllRequests = (req, res) => {
     }else res.send(data);
   });
 };
+
+const getUserHistories  = (req, res) => {
+  Request.getHistoriesByID(req.params.id, (err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  })
+}
 
 const updateRequest = (req, res) => {
   if(!req.body) {
@@ -126,9 +85,8 @@ const deleteRequest = (req, res) => {
 }
 module.exports = {
   createNewRequest,
-  validRequest,
-  //login,
   getAllRequests,
+  getUserHistories,
   updateRequest,
   deleteRequest
 }

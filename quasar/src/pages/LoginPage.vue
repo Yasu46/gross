@@ -84,6 +84,7 @@ export default defineComponent({
           })
           this.store.userid = res.data.id
           this.store.name = res.data.name
+          this.store.login = true
         }
         this.$router.push("/request")
       })
