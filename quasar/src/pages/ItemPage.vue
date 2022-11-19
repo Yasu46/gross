@@ -46,7 +46,7 @@
                       </q-form>
                     </template>
                     <template #body="props">
-                      <q-tr>
+                      <q-tr :class="[visibleCategory[this.categories.indexOf(props.row)] ? 'inv' : '']">
                         <q-td key="id" :props="props">
                           {{ props.row.id }}
                         </q-td>
@@ -55,37 +55,20 @@
                         </q-td>
                         <q-td key="actions" :props="props">
                           <div class="q-ma-sm">
-                            <!-- <q-btn
-                              class="q-pa-sm q-mx-sm"
-                              :icon="editCategory[this.categories.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                              :color="editCategory[this.categories.indexOf(props.row)] ? 'primary' : 'red'"
-                              @click="onEditCategory(props.row)" 
+                            <q-btn class="q-pa-sm q-mx-sm" icon="edit" color="primary" 
+                              @click="editRecordCategory(props.row)" 
                               :disabled="visibleCategory[this.categories.indexOf(props.row)]? '':disabled"
-                            >
-                            </q-btn> -->
-                            <q-btn
-                              class="q-pa-sm q-mx-sm"
-                              :icon="editCategory[this.categories.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                              :color="editCategory[this.categories.indexOf(props.row)] ? 'primary' : 'red'"
-                              @click="onEditCategory(props.row)" 
-                              :disabled="visibleCategory[this.categories.indexOf(props.row)]? '':disabled"
-                            >
-                            </q-btn>
-                            <!-- <q-btn 
-                              class="q-pa-sm"
-                              icon="delete"
-                              color="red"
+                            />
+                            <q-btn class="q-pa-sm" icon="delete" color="red" 
                               @click="onDeleteCategory(props.row)" 
-                              :disabled="store.visibleCategory[this.store.categories.indexOf(props.row)]? '':disabled"
-                            >
-                              <q-tooltip class="bg-accent">Delete</q-tooltip>
-                            </q-btn> -->
-                            <!-- <q-icon 
-                              :name="store.visibleCategory[this.categories.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
+                              :disabled="visibleCategory[this.categories.indexOf(props.row)]? '':disabled"
+                            />
+                            <q-icon 
+                              :name="visibleCategory[this.categories.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
                               class="cursor-pointer q-ma-sm"
                               @click="onVisibleCategory(props.row)"
                               size="sm"
-                            /> -->
+                            />
                           </div>
                         </q-td>
                       </q-tr>
@@ -95,6 +78,7 @@
               </q-card>
             </q-expansion-item>
           </q-list>
+          <!---------------------->
           <br />
           <!-- Product section -->
           <q-list class="rounded-borders">
@@ -179,70 +163,36 @@
                       </q-form>
                     </template>
                     <template #body="props">
-                      <q-tr>
+                      <q-tr :class="[visibleItem[this.items.indexOf(props.row)] ? 'inv' : '']">
                         <q-td key="id" :props="props">
                           {{ props.row.id }}
                         </q-td>
                         <q-td key="name" :props="props">
                           {{ props.row.name }}
-                          <!-- <q-popup-edit 
-                            v-if="editProduct[this.store.products.indexOf(props.row)]"
-                            v-model.number="props.row.name"
-                            buttons v-slot="scope"
-                          >
-                            <q-input type="text" v-model="scope.value" dense autofocus @keyup.enter="scope.set" 
-                              lazy-rules
-                              :rules="[ val => val && val.length > 0 || 'Please type something']"
-                            />
-                          </q-popup-edit> -->
                         </q-td>
                         <q-td key="price" :props="props">
                           {{ props.row.price }}
-                          <!-- <q-popup-edit 
-                            v-if="editProduct[this.store.products.indexOf(props.row)]"
-                            v-model.number="props.row.price"
-                            buttons 
-                            v-slot="scope"
-                            :validate="onProductPriceValidation"
-                            @hide="onProductPriceValidation"
-                          >
-                          <q-input 
-                            type="number" 
-                            v-model.number="scope.value" 
-                            :error="errorPrice"
-                            :error-message="errorMessagePrice"
-                            dense 
-                            autofocus 
-                            @keyup.enter="scope.set" 
-                          />
-                          </q-popup-edit> -->
                         </q-td>
-                        <q-td key="category_id" :props="props">
-                          {{ props.row.category_id }}
+                        <q-td key="category" :props="props">
+                          {{ props.row.category }}
                         </q-td>
                         <q-td key="actions" :props="props">
-                          <!-- <div class="q-pa-sm">
-                            <q-btn 
-                              class="q-pa-sm q-mx-sm" 
-                              :icon="editProduct[this.store.products.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                              :color="editProduct[this.store.products.indexOf(props.row)] ? 'primary' : 'red'"
-                              @click="onEditProduct(props.row)"
-                              :disabled="store.visibleProduct[this.store.products.indexOf(props.row)]? '':disabled"
+                          <div class="q-pa-sm">
+                            <q-btn class="q-pa-sm q-mx-sm" icon="edit" color="primary"
+                              @click="editRecordItem(props.row)"
+                              :disabled="visibleItem[this.items.indexOf(props.row)]? '':disabled"
                             />
-                            <q-btn 
-                              class="q-pa-sm" 
-                              color="red" 
-                              icon="delete" 
-                              @click="onDeleteProduct(props.row)" 
-                              :disabled="store.visibleProduct[this.store.products.indexOf(props.row)]? '':disabled"
+                            <q-btn class="q-pa-sm" color="red" icon="delete" 
+                              @click="onDeleteProduct(props.row)"
+                              :disabled="visibleItem[this.items.indexOf(props.row)]? '':disabled"
                             />
                             <q-icon 
-                              :name="store.visibleProduct[this.store.products.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
+                              :name="visibleItem[this.items.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
                               class="cursor-pointer q-ma-sm"
-                              @click="onVisibleProduct(props.row)"
+                              @click="onVisibleItem(props.row)"
                               size="sm"
                             />
-                          </div> -->
+                          </div>
                         </q-td>
                       </q-tr>
                     </template>
@@ -251,6 +201,7 @@
               </q-card>
             </q-expansion-item>
           </q-list>
+          <!--------------------->
           <br />
           <!-- Staff section -->
           <q-list class="rounded-borders">
@@ -296,42 +247,30 @@
                     </template>
                     
                     <template #body="props">
-                      <q-tr>
+                      <q-tr :class="[visibleStaff[this.staffs.indexOf(props.row)] ? 'inv' : '']">
                         <q-td key="id" :props="props">
                           {{ props.row.id }}
                         </q-td>
                         <q-td key="name" :props="props">
                           {{ props.row.name }}
-                          <!-- <q-popup-edit 
-                            v-if="editStaff[this.store.staffs.indexOf(props.row)]"
-                            v-model.number="props.row.name"
-                            buttons v-slot="scope"
-                          >
-                            <q-input type="text" v-model="scope.value" dense autofocus @keyup.enter="scope.set" />
-                          </q-popup-edit> -->
                         </q-td>
                         <q-td key="actions" :props="props">
-                          <!-- <div class="q-pa-sm">
-                            <q-btn 
-                              class="q-ma-sm q-pa-sm"
-                              :icon="editStaff[this.store.staffs.indexOf(props.row)] ? 'edit' : 'edit_off'"
-                              :color="editStaff[this.store.staffs.indexOf(props.row)] ? 'blue' : 'red'"
-                              @click="onEditStaff(props.row)"
-                              dense
-                              :disabled="store.visibleStaff[this.store.staffs.indexOf(props.row)]? '':disabled"
-                            >
-                              <q-tooltip class="bg-accent">Edit</q-tooltip>
-                            </q-btn>
-                            <q-btn class="q-pa-sm" name="delete" icon='delete' color="red" @click="onDeleteStaff(props.row)" :disabled="store.visibleStaff[this.store.staffs.indexOf(props.row)]? '':disabled">
-                              <q-tooltip class="bg-accent">Delete</q-tooltip>
-                            </q-btn>
+                          <div class="q-pa-sm">
+                            <q-btn class="q-ma-sm q-pa-sm" icon="edit" color="primary" dense
+                              @click="editRecordStaff(props.row)"
+                              :disabled="visibleStaff[this.staffs.indexOf(props.row)]? '':disabled"
+                            />
+                            <q-btn class="q-pa-sm" name="delete" icon='delete' color="red" 
+                              @click="onDeleteStaff(props.row)"
+                              :disabled="visibleStaff[this.staffs.indexOf(props.row)]? '':disabled"
+                            />
                             <q-icon 
-                              :name="store.visibleStaff[this.store.staffs.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
+                              :name="visibleStaff[this.staffs.indexOf(props.row)] ? 'visibility_off' : 'visibility'" 
                               class="cursor-pointer q-ma-sm"
                               @click="onVisibleStaff(props.row)"
                               size="sm"
                             />
-                          </div> -->
+                          </div>
                         </q-td>
                       </q-tr>
                     </template>
@@ -340,9 +279,94 @@
               </q-card>
             </q-expansion-item>
           </q-list>
+          <!------------------->
         </div>
       </div>
     </div>
+    <!-- Category Edit dialog -->
+    <q-dialog v-model="c_form_edit" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="edit" color="primary" text-color="white" />
+          <span class="q-ml-sm text-h6">
+            Edit Category ID: {{ input.id }}
+          </span>
+        </q-card-section>
+        <q-card-section>
+          <q-input v-model="input.name" type="text" label="Category name" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" 
+            color="primary" 
+            v-close-popup 
+            @click="onCancelEdit()"
+          />
+          <q-btn flat label="Edit" 
+            color="primary" 
+            v-close-popup 
+            @click="onEditCategory()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!-------------------------->
+
+    <!-- Item Edit dialog -->
+    <q-dialog v-model="i_form_edit" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="edit" color="primary" text-color="white" />
+          <span class="q-ml-sm text-h6">
+            Edit Item ID: {{ input.id }}
+          </span>
+        </q-card-section>
+        <q-card-section>
+          <q-input v-model="input.name" type="text" label="Item name" />
+          <q-input v-model="input.price" type="number" label="Item price" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" 
+            color="primary" 
+            v-close-popup 
+            @click="onCancelEdit()"
+          />
+          <q-btn flat label="Edit" 
+            color="primary" 
+            v-close-popup 
+            @click="onEditItem()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!---------------------->
+
+    <!-- Staff Edit dialog -->
+    <q-dialog v-model="s_form_edit" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="edit" color="primary" text-color="white" />
+          <span class="q-ml-sm text-h6">
+            Edit Staff ID: {{ input.id }}
+          </span>
+        </q-card-section>
+        <q-card-section>
+          <q-input v-model="input.name" type="text" label="Staff name" />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" 
+            color="primary" 
+            v-close-popup 
+            @click="onCancelEdit()"
+          />
+          <q-btn flat label="Edit" 
+            color="primary" 
+            v-close-popup 
+            @click="onEditStaff()"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <!---------------------->
   </q-page>
 </template>
 
@@ -364,8 +388,7 @@ export default defineComponent({
         { name: 'actions', label: 'Actions', field: 'actions', align: 'center', }
       ],
       category: '',
-      //category_id: '',
-      editCategory: [],
+      // editCategory: [],
       visibleCategory: [],
 
       // product
@@ -374,13 +397,14 @@ export default defineComponent({
         { name: 'id', label: 'Product ID', field: 'id', align: 'left'},
         { name: 'name', label: 'Name', field: 'name',align: 'left',  },
         { name: 'price', label: 'Price', field: 'price',align: 'left',  },
-        { name: 'category_id', label: 'Category ID', field: 'category_id',align: 'left',  },
+        { name: 'category', label: 'Category', field: 'category',align: 'left',  },
         { name: 'actions', label: 'Actions', field: 'actions', align: 'center', }
       ],
       item: '',
       price: '',
       label: 'category',
-      selectedCategory: '',
+      //selectedCategory: '',
+      visibleItem: [],
 
       // staff
       //users: [],
@@ -391,6 +415,13 @@ export default defineComponent({
         { name: 'name', label: 'Name', field: 'name',align: 'left',  },
         { name: 'actions', label: 'Actions', field: 'actions', align: 'center', }
       ],
+      visibleStaff: [],
+
+      // edit & delete
+      input: [],
+      c_form_edit: false,
+      i_form_edit: false,
+      s_form_edit: false
     }
   },
   methods: {
@@ -407,8 +438,6 @@ export default defineComponent({
           type: "negative",
           message: "Unauthorized categories"
         })
-        // this.store.clearStore()
-        // this.$router.push("/login")
         console.log(err);
       })
     },
@@ -426,8 +455,6 @@ export default defineComponent({
           type: "negative",
           message: "Unauthorized items"
         })
-        // this.store.clearStore()
-        // this.$router.push("/login")
         console.log(err);
       })
     },
@@ -445,10 +472,10 @@ export default defineComponent({
           type: "negative",
           message: "Unauthorized staffs"
         })
-        // this.store.clearStore()
         console.log(err);
       })
     },
+
     onAddCategory() {
       //console.log(this.category)
       const data = {
@@ -471,6 +498,7 @@ export default defineComponent({
         console.log(err);
       })
     },
+
     onAddProduct() {
       let c_id = 0;
       for(let i=0; i < this.categories.length; i++) {
@@ -501,6 +529,7 @@ export default defineComponent({
         console.log(err);
       })
     },
+
     onAddStaff() {
       const data = {
         name: this.staff,
@@ -523,51 +552,187 @@ export default defineComponent({
         console.log(err);
       })
     },
+
     onResetCategory() {
       this.category = ''
     },
+
     onResetProduct() {
       this.item = ''
       this.price = ''
       this.label = 'category'
     },
-    onEditCategory(category){
-      const index = this.categories.indexOf(category)
-      this.editCategory[index] = !this.editCategory[index]
+
+    onResetStaff() {
+      this.staff = ''
     },
-    onAfterEditCategory(category) {
-      console.log(category)
+
+    editRecordCategory(record) {
+      console.log(record)
+      this.input = record
+      this.c_form_edit = true
+    },
+
+    editRecordItem(record) {
+      console.log(record)
+      this.input = record
+      this.i_form_edit = true
+    },
+
+    editRecordStaff(record) {
+      console.log(record)
+      this.input = record
+      this.s_form_edit = true
+    },
+
+    onEditCategory() {
       const data = {
-        name: category.name
+        name: this.input.name
       }
       console.log(data)
-      this.$api.put("/categories/" + category.id, data)
+      this.$api.put("/categories/" + this.input.id, data)
       .then((res) => {
-        Notify.create({
-          type: "positive",
-          message: "Updated category ID: " + res.data.id
-        })
-        this.getAllCategories();
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Updated category ID: " + res.data.id
+          })
+          this.input = [];
+          this.getAllCategories();
+        }
       })
       .catch((err)=>{
         console.log(err)
       })
-      // const index = this.store.categories.indexOf(category)
-      // for(let i=0; i<this.store.products.length; i++){
-      //   if(this.store.products[i].category==this.newval){
-      //     this.store.products[i].category= this.store.categories[index].name
-      //   }
-      // }
-      // console.log("aaa")
-      // console.log(this.newval)
-      // console.log(this.store.categories[0].name)
     },
+
+    onEditItem() {
+      const data = {
+        name: this.input.name,
+        price: this.input.price,
+      }
+      console.log(data)
+      this.$api.put("/items/" + this.input.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Updated item ID: " + res.data.id
+          })
+          console.log("input: "+this.input)
+          this.input = [];
+          this.getAllItems();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+    },
+
+    onEditStaff() {
+      const data = {
+        name: this.input.name,
+      }
+      console.log(data)
+      this.$api.put("/staffs/" + this.input.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Updated staff ID: " + res.data.id
+          })
+          console.log("input: "+this.input)
+          this.input = [];
+          this.getAllStaffs();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+    },
+
+    onDeleteCategory(category) {
+      this.$api
+      .delete("/categories/" + category.id)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Deleted category ID: " + res.data.id
+          })
+          this.getAllCategories();
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+
+    onDeleteProduct(item) {
+      this.$api
+      .delete("/items/" + item.id)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Deleted item ID: " + res.data.id
+          })
+          this.getAllItems();
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+
+    onDeleteStaff(staff) {
+      this.$api
+      .delete("/staffs/" + staff.id)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Deleted staff ID: " + res.data.id
+          })
+          this.getAllStaffs();
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+
+    onCancelEdit() {
+      this.getAllCategories()
+      this.getAllItems();
+      this.getAllStaffs();
+    },
+
+    onVisibleCategory(category) {
+      const index = this.categories.indexOf(category);
+      this.visibleCategory[index] = !this.visibleCategory[index]
+    },
+
+    onVisibleItem(item) {
+      const index = this.items.indexOf(item);
+      this.visibleItem[index] = !this.visibleItem[index]
+    },
+
+    onVisibleStaff(staff) {
+      const index = this.staffs.indexOf(staff);
+      this.visibleStaff[index] = !this.visibleStaff[index]
+    }
   },
   async mounted() {
     await this.getAllCategories();
     await this.getAllItems();
     await this.getAllStaffs();
-    //await this.getAllUsers();
   }
 })
 </script>
+
+<style>
+  .inv {
+    opacity: 0.3;
+  }
+</style>
