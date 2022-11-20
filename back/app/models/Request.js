@@ -38,23 +38,24 @@ Request.getAllRecords = (result) => {
   });
 };
 
-// User.updateByID = (id, data, result) => {
-//   sql.query("UPDATE users SET name=?, email=?, address=? WHERE id=?", 
-//   [data.name, data.email, data.address, id], (err, res) => {
-//     if(err) {
-//       console.log("Query error: " + err);
-//       result(err, null);
-//       return;
-//     }
-//     if(res.affectedRows == 0) {
-//       // this user id not found
-//       result({kind: "not_found"}, null);
-//       return;
-//     }
-//     console.log("Update user: " , { id: id, ...data });
-//     result(null, { id: id, ...data });
-//   })
-// };
+Request.updateByID = (id, data, result) => {
+  sql.query("UPDATE requests SET status=? WHERE id=?", 
+  [data.status, id], (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    if(res.affectedRows == 0) {
+      // this user id not found
+      result({kind: "not_found"}, null);
+      return;
+    }
+    console.log("Update status: " , { id: id, ...data });
+    result(null, { id: id, ...data });
+  })
+};
+
 Request.getHistoriesByID = (id, result) => {
   sql.query("SELECT id, total_price, request_date, status FROM requests WHERE user_id = ?", id, (err, res) => {
     if(err) {
@@ -81,4 +82,71 @@ Request.remove = (id, result) => {
     result(null, {id: id})
   });
 };
+
+Request.getAllToDos = (result) => {
+  sql.query("SELECT r.id, r.request_date, u.address, u.email, r.status FROM requests r inner join users u on u.id = r.user_id WHERE r.status IN ('In-progress' , 'Completed')", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+Request.getAllTransactions = (result) => {
+  sql.query("SELECT count(*) AS total FROM requests", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+Request.getTodayTransactions = (date, result) => {
+  sql.query("SELECT count(*) AS total FROM requests WHERE request_date LIKE '" + date + "%'", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+Request.getAllPending = (date, result) => {
+  sql.query("SELECT count(*) AS total FROM requests WHERE status = 'pending' AND request_date LIKE '" + date + "%'", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+Request.getAllInProgress = (date, result) => {
+  sql.query("SELECT count(*) AS total FROM requests WHERE status = 'In-progress' AND request_date LIKE '" + date + "%'", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
+Request.getAllRejected = (date, result) => {
+  sql.query("SELECT count(*) AS total FROM requests WHERE status = 'Rejected' AND request_date LIKE '" + date + "%'", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
+
 module.exports = Request;

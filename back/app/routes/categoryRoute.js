@@ -7,5 +7,6 @@ module.exports = (app) => {
   router.get("/", category_controller.getAllCategories);
   router.put("/:id", category_controller.updateCategory);
   router.delete("/:id", category_controller.deleteCategory);
+  router.post("/visible", category_controller.visibleCategory);
   app.use("/categories", router);
 };

@@ -87,8 +87,7 @@ const updateItem = (req, res) => {
   }
   const data = {
     name: req.body.name,
-    price: req.body.price,
-    category_id: req.body.category_id
+    price: req.body.price
   };
   Item.updateByID(req.params.id, data, (err, result) => {
     if(err) {

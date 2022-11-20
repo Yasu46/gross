@@ -84,4 +84,23 @@ Category.remove = (id, result) => {
     result(null, {id: id})
   });
 };
+
+Category.visible = (id, data, result) => {
+  sql.query("UPDATE categories SET visible=? WHERE id=?", 
+  [data.visible, id], (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    if(res.affectedRows == 0) {
+      // this user id not found
+      result({kind: "not_found"}, null);
+      return;
+    }
+    console.log("Switch category visible: " , { id: id, ...data });
+    result(null, { id: id, ...data });
+  })
+};
+
 module.exports = Category;

@@ -47,11 +47,9 @@ const updateRequest = (req, res) => {
     res.status(400).send({ message: "Content can not be empty."});
   }
   const data = {
-    user_id: req.body.user_id,
-    total_price: req.body.total_price,
-    request_date: req.body.request_date,
     status: req.body.status
   };
+  console.log(data)
   Request.updateByID(req.params.id, data, (err, result) => {
     if(err) {
       if(err.kind == "not_found") {
@@ -82,11 +80,78 @@ const deleteRequest = (req, res) => {
     }
     else res.send(result);
   });
+};
+
+const getAllToDos = (req, res) => {
+  Request.getAllToDos((err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+};
+
+const getAllTransactions = (req, res) => {
+  Request.getAllTransactions((err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+};
+
+const getTodayTransactions = (req, res) => {
+  Request.getTodayTransactions(req.params.date, (err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+};
+
+const getAllPenging = (req, res) => {
+  Request.getAllPending(req.params.date, (err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
 }
+
+const getAllInProgress = (req, res) => {
+  Request.getAllInProgress(req.params.date, (err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+}
+
+const getAllRejected = (req, res) => {
+  Request.getAllRejected(req.params.date, (err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+}
+
 module.exports = {
   createNewRequest,
   getAllRequests,
   getUserHistories,
   updateRequest,
-  deleteRequest
+  deleteRequest,
+  getAllToDos,
+  getAllTransactions,
+  getTodayTransactions,
+  getAllPenging,
+  getAllInProgress,
+  getAllRejected
 }
