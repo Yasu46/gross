@@ -12,7 +12,7 @@
           > 
             <template #body-cell-status="props">
               <q-td :props="props">
-                <q-badge :color="this.statusColor(props.row)">
+                <q-badge :color="this.statusColor(props.row.status)">
                   {{props.row.status}}
                 </q-badge>
               </q-td>
@@ -34,6 +34,7 @@
 <script>
 import { defineComponent } from 'vue'
 import { userStore } from "../stores/user-store"
+import { Notify } from "quasar"
 
 export default defineComponent({
   name: 'StaffPage',
@@ -43,7 +44,7 @@ export default defineComponent({
       todoList: [],
       todoCols: [
         { name: 'id', label: 'Request ID', field: 'id', align: 'left'},
-        { name: 'date', label: 'Date', field: 'date', align: 'left', },
+        { name: 'request_date', label: 'Date', field: 'request_date', align: 'left', },
         { name: 'address', label: 'Address', field: 'address', align: 'left', },
         { name: 'email', label: 'Email', field: 'email', align: 'left', },
         { name: 'status', label: 'Status', field: 'status', align: 'left', },
@@ -53,8 +54,23 @@ export default defineComponent({
     }
   },
   methods: {
+    getAllToDos() {
+      this.$api.get('/requests/transaction/todo')
+      .then((res) => {
+        if (res.status == 200) {
+          console.log(res.data);
+          this.todoList = res.data
+        }
+      })
+      .catch((err) => {
+        Notify.create({
+          type: "negative",
+          message: "Unauthorized"
+        })
+      })
+    },
     statusColor(status) {
-      for(let i = 0; i < this.histories.length; i++) {
+      for(let i = 0; i < this.todoList.length; i++) {
         if (status == 'Pending') {
           return 'grey-8'
         }
@@ -70,17 +86,27 @@ export default defineComponent({
       }
     },
     onClick(item) {
-      const index = this.store.todoList.indexOf(item)
-      if(this.store.todoList[index].status == 'In-progress') {
-        this.store.todoList[index].status = 'Completed'
-        for(let i = 0; i < this.store.requestList.length; i++) {
-          if(this.store.todoList[index].requestId == this.store.requestList[i].requestId) {
-            this.store.requestList[i].status = "Completed"
-            this.store.disableCheck[i] = true
-          }
-        }
+      const data = {
+        status: "Completed"
       }
+      console.log(data)
+      this.$api.put("/requests/" + item.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Completed request ID: " + res.data.id
+          })
+          this.getAllToDos();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
     }
+  },
+  async mounted() {
+    await this.getAllToDos();
   }
 })
 </script>

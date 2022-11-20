@@ -11,43 +11,64 @@
           >
             <template #body-cell-status="props">
               <q-td :props="props">
-                <q-badge :color="statusColor(props.row)">
+                <q-badge :color="this.statusColor(props.row.status)">
                   {{props.row.status}}
                 </q-badge>
               </q-td>
             </template>
-
+            <!-- <q-btn-dropdown
+              key="defaultLabel" 
+              :props="props"
+              color="primary" 
+              :label="defaultLabel"
+              lazy-rules
+              :rules="[rule]"
+              aria-errormessage="errormessage"
+            >
+              <q-list>
+                <q-item 
+                  v-for="(category, index) in renewCategory"
+                  :key="index"
+                  clickable v-close-popup 
+                  @click="defaultLabel= category.name"
+                >
+                  <q-item-section>
+                    <q-item-label>{{ category.name }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown> -->
             <template #body-cell-action="props">
               <q-td :props="props">
                 <div class="q-pa-md">
-                  <!-- <q-btn-dropdown
+                  <q-btn-dropdown
                     dense
                     :value="props.row.staffID"
                     :label="props.row.staffNameLabel"
                     icon="engineering" 
                     color="primary"
-                    :disabled="this.store.assignedCheck[this.store.requestList.indexOf(props.row)] ? '' : disabled"
+                    :disabled="assignedCheck[requests.indexOf(props.row)] ? '' : disabled"
                   >
                     <q-list>
                       <q-item 
                         clickable 
-                        v-close-popup 
-                        @click="props.row.staffNameLabel = staff.name, props.row.staffID = staff.staffId"
-                        v-for="(staff,index) in renewStaffs"
+                        v-close-popup
+                        @click="props.row.staffNameLabel = staff.name, props.row.staffID = staff.id"
+                        v-for="(staff,index) in staffs"
                         :key="index"
                       >
                         <q-item-section>
-                          <q-item-label>{{staff.staffId}}: {{staff.name}}</q-item-label>
+                          <q-item-label>{{staff.id}}: {{staff.name}}</q-item-label>
                         </q-item-section>
                       </q-item>
                     </q-list>
-                  </q-btn-dropdown> -->
+                  </q-btn-dropdown>
                   <q-btn
                     dense
                     :color="assignedCheck[requests.indexOf(props.row)] ? 'green-8' : 'grey-8'"
                     :icon="assignedCheck[requests.indexOf(props.row)] ? 'check' : 'unchecked'"
                     @click="onAssigned(props.row)"
-                    :disabled="assgnedCheck[requests.indexOf(props.row)] ? '' : disabled"
+                    :disabled="assignedCheck[requests.indexOf(props.row)] ? '' : disabled"
                   />
                   <q-btn
                     class="q-mx-sm"
@@ -86,10 +107,14 @@ export default defineComponent({
         { name: 'action', label: 'Action', field: 'action', align: 'center' }
       ],
       assignedCheck: [],
-      disableCheck: []
+      disableCheck: [],
+      staffs: [],
+      staffNameLabel: [],
+      staffID: [],
     }
   },
   methods: {
+    
     getAllRequests() {
       this.$api.get('/requests')
       .then((res) => {
@@ -104,6 +129,87 @@ export default defineComponent({
           message: "Unauthorized"
         })
         // this.store.clearStore()
+      })
+    },
+    getAllStaffs() {
+      this.$api.get('/staffs')
+      .then((res) => {
+        if (res.status == 200) {
+          console.log(res.data)
+          this.staffs = res.data
+        }
+      })
+      .catch((err) => {
+        Notify.create({
+          type: "negative",
+          message: "Unauthorized staffs"
+        })
+        console.log(err);
+      })
+    },
+    onAssigned(request) {
+      const data = {
+        status: "In-progress"
+      }
+      console.log(data)
+      this.$api.put("/requests/" + request.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "In-progress request ID: " + res.data.id
+          })
+          this.getAllRequests();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+      if(request.staffNameLabel != null) {
+        // Change it true at last
+        this.assignedCheck[index] = !this.assignedCheck[index]
+      }
+      
+
+      // const index = this.requests.indexOf(request)
+      // const length = this.staffs.length
+      // let id = 0
+      // for(let i = 0; i < length; i++) {
+      //   if(this.store.staffs[i].staffId == request.staffID) {
+      //     id = this.store.staffs[i].staffId
+      //   }
+      // }
+      // if(request.staffNameLabel != null) {
+      //   // Change it true at last
+      //   this.store.assignedCheck[index] = true
+      //   this.store.requestList[index].status = 'In-progress'
+      //   this.store.todoList.push({
+      //     requestId: request.requestId,
+      //     date: request.date,
+      //     address: request.address,
+      //     email: request.email,
+      //     status: request.status,
+      //     staffId: id + ": " + request.staffNameLabel
+      //   })
+      // }
+    },
+    onReject(request) {
+      const data = {
+        status: "Rejected"
+      }
+      console.log(data)
+      this.$api.put("/requests/" + request.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Rejected request ID: " + res.data.id
+          })
+          this.getAllRequests();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
       })
     },
     statusColor(status) {
@@ -126,6 +232,7 @@ export default defineComponent({
   async mounted() {
     //this.dataReady = true
     await this.getAllRequests();
+    await this.getAllStaffs();
   }
 })
 </script>
