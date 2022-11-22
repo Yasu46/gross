@@ -1,4 +1,5 @@
 const Request = require("../models/Request");
+
 const createNewRequest = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -8,6 +9,7 @@ const createNewRequest = (req, res) => {
 
   const requestObj = new Request({
     user_id: req.body.user_id,
+    staff_id: req.body.staff_id,
     total_price: req.body.total_price,
     request_date: req.body.request_date,
     status: req.body.status
@@ -47,7 +49,8 @@ const updateRequest = (req, res) => {
     res.status(400).send({ message: "Content can not be empty."});
   }
   const data = {
-    status: req.body.status
+    status: req.body.status,
+    staff_id: req.body.staff_id
   };
   console.log(data)
   Request.updateByID(req.params.id, data, (err, result) => {

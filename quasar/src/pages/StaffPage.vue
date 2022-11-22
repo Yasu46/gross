@@ -20,7 +20,7 @@
             <template #body-cell-action="props">
               <q-td :props="props">
                 <div class="q-pa-sm">
-                  <q-btn class="q-pa-xs" color="primary" label="Completed!" @click="onClick(props.row)" />
+                  <q-btn class="q-pa-xs" color="primary" label="Completed!" @click="onClick(props.row)" :disabled="disable[todoList.indexOf(props.row)] ? '' : disabled"/>
                 </div>
               </q-td>
             </template>
@@ -48,9 +48,10 @@ export default defineComponent({
         { name: 'address', label: 'Address', field: 'address', align: 'left', },
         { name: 'email', label: 'Email', field: 'email', align: 'left', },
         { name: 'status', label: 'Status', field: 'status', align: 'left', },
-        { name: 'staffId', label: 'Staff ID', field: 'staffId', align: 'left' },
+        { name: 'staff_id', label: 'Staff ID', field: 'staff_id', align: 'left' },
         { name: 'action', label: 'Action', field: 'action', align: 'left' }
       ],
+      disable: []
     }
   },
   methods: {
@@ -60,6 +61,11 @@ export default defineComponent({
         if (res.status == 200) {
           console.log(res.data);
           this.todoList = res.data
+          for(let i = 0;i<this.todoList.length; i++) {
+            if(this.todoList[i].status == "Completed") {
+              this.disable[i] = true
+            }
+          }
         }
       })
       .catch((err) => {
@@ -86,8 +92,11 @@ export default defineComponent({
       }
     },
     onClick(item) {
+      const index = this.todoList.indexOf(item)
+
       const data = {
-        status: "Completed"
+        status: "Completed",
+        staff_id: this.todoList[index].staff_id
       }
       console.log(data)
       this.$api.put("/requests/" + item.id, data)
@@ -95,7 +104,7 @@ export default defineComponent({
         if(res.status == 200) {
           Notify.create({
             type: "positive",
-            message: "Completed request ID: " + res.data.id
+            message: "Comleted request ID: " + res.data.id
           })
           this.getAllToDos();
         }
@@ -103,6 +112,60 @@ export default defineComponent({
       .catch((err)=>{
         console.log(err)
       })
+
+      const data2 = {
+        staff_status: false
+      }
+      console.log(data)
+      this.$api.put("/staffs/staff/" + this.todoList[index].staff_id, data2)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Completed status ID: " + res.data.id
+          })
+          this.getAllToDos();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+
+      // const data2 = {
+      //   name: this.todoList[index].name,
+      //   staff_status: false
+      // }
+      // this.$api.put("/staffs/" + this.todoList[index].staffID, data2)
+      // .then((res) => {
+      //   if(res.status == 200) {
+      //     Notify.create({
+      //       type: "positive",
+      //       message: "staff rejected ID: " + this.todoList[index].staffID
+      //     })
+      //     this.getSelectedStaffs();
+      //   }
+      // })
+      // .catch((err)=>{
+      //   console.log(err)
+      // })
+      // const index = this.requests.indexOf(request)
+      // const data2 = {
+      //   name: this.requests[index].name,
+      //   staff_status: false
+      // }
+      // this.$api.put("/staffs/" + this.requests[index].staffID, data2)
+      // .then((res) => {
+      //   if(res.status == 200) {
+      //     Notify.create({
+      //       type: "positive",
+      //       message: "staff rejected ID: " + this.requests[index].staffID
+      //     })
+      //     this.getSelectedStaffs();
+      //   }
+      // })
+      // .catch((err)=>{
+      //   console.log(err)
+      // })
     }
   },
   async mounted() {

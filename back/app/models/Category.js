@@ -52,8 +52,8 @@ Category.getAllRecords = (result) => {
 }
 
 Category.updateByID = (id, data, result) => {
-  sql.query("UPDATE categories SET name=? WHERE id=?", 
-  [data.name, id], (err, res) => {
+  sql.query("UPDATE categories SET name=?, visible=? WHERE id=?", 
+  [data.name, data.visible, id], (err, res) => {
     if(err) {
       console.log("Query error: " + err);
       result(err, null);

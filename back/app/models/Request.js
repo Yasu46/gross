@@ -4,6 +4,7 @@ const { strictEqual } = require("assert");
 // Constructor
 const Request = function (request) {
   this.user_id = request.user_id;
+  this.staff_id = request.staff_id;
   this.total_price = request.total_price;
   this.request_date = request.request_date;
   this.status = request.status;
@@ -39,8 +40,8 @@ Request.getAllRecords = (result) => {
 };
 
 Request.updateByID = (id, data, result) => {
-  sql.query("UPDATE requests SET status=? WHERE id=?", 
-  [data.status, id], (err, res) => {
+  sql.query("UPDATE requests SET status=?, staff_id=? WHERE id=?", 
+  [data.status, data.staff_id, id], (err, res) => {
     if(err) {
       console.log("Query error: " + err);
       result(err, null);
@@ -84,7 +85,7 @@ Request.remove = (id, result) => {
 };
 
 Request.getAllToDos = (result) => {
-  sql.query("SELECT r.id, r.request_date, u.address, u.email, r.status FROM requests r inner join users u on u.id = r.user_id WHERE r.status IN ('In-progress' , 'Completed')", (err, res) => {
+  sql.query("SELECT r.id, r.request_date, u.address, u.email, r.staff_id, r.status FROM requests r inner join users u on u.id = r.user_id WHERE r.status IN ('In-progress' , 'Completed')", (err, res) => {
     if(err) {
       console.log("Query error: " + err);
       result(err, null);

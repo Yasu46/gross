@@ -78,18 +78,6 @@ User.getAllRecords = (result) => {
   });
 };
 
-User.getStaffRecords = (result) => {
-  sql.query("SELECT * FROM users WHERE role=false", (err, res) => {
-    console.log("bbb" + res)
-    if(err) {
-      console.log("Query error: " + err);
-      result(err, null);
-      return;
-    }
-    result(null, res);
-  })
-}
-
 User.updateByID = (id, data, result) => {
   sql.query("UPDATE users SET name=?, email=?, address=? WHERE id=?", 
   [data.name, data.email, data.address, id], (err, res) => {

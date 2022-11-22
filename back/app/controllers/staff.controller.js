@@ -9,7 +9,8 @@ const createNewStaff = (req, res) => {
   //const salt = bcrypt.genSaltSync(10);
   const staffObj = new Staff({
     name: req.body.name,
-    visible: req.body.visible
+    visible: req.body.visible,
+    staff_status: req.body.staff_status
   });
   Staff.create(staffObj, (err, data) => {
     if(err) {
@@ -79,14 +80,26 @@ const getAllStaffs = (req, res) => {
       })
     }else res.send(data);
   })
-}
+};
+
+const getSelectedStaffs = (req, res) => {
+  Staff.getSelectedRecords((err, data) => {
+    console.log("aaa" + data)
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+};
 
 const updateStaff = (req, res) => {
   if(!req.body) {
     res.status(400).send({ message: "Content can not be empty."});
   }
   const data = {
-    name: req.body.name
+    name: req.body.name,
+    visible: req.body.visibility
   };
   Staff.updateByID(req.params.id, data, (err, result) => {
     if(err) {
@@ -97,6 +110,28 @@ const updateStaff = (req, res) => {
       } else {
         res.status(500).send({
           message: "Error update user id: " + req.params.id
+        });
+      }
+    } else res.send(result);
+  });
+};
+
+const updateStatusStaff = (req, res) => {
+  if(!req.body) {
+    res.status(400).send({ message: "Content can not be empty."});
+  }
+  const data = {
+    staff_status: req.body.staff_status
+  };
+  Staff.updateStatusByID(req.params.id, data, (err, result) => {
+    if(err) {
+      if(err.kind == "not_found") {
+        res.status(401).send({
+          message: "Not found staff id: " + req.params.id
+        });
+      } else {
+        res.status(500).send({
+          message: "Error update staff id: " + req.params.id
         });
       }
     } else res.send(result);
@@ -126,5 +161,7 @@ module.exports = {
   // getAllUsers,
   getAllStaffs,
   updateStaff,
-  deleteStaff
+  deleteStaff,
+  getSelectedStaffs,
+  updateStatusStaff
 }

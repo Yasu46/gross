@@ -121,6 +121,17 @@ export default defineComponent({
         if (res.status == 200) {
           console.log(res.data);
           this.requests = res.data
+          for(let i = 0;i<this.requests.length; i++) {
+            if(this.requests[i].status == "In-progress") {
+              this.assignedCheck[i] = true
+            }else if(this.requests[i].status == "Rejected"){
+              this.disableCheck[i] = true
+              this.assignedCheck[i] = true
+            }else if(this.requests[i].status == "Completed"){
+              this.disableCheck[i] = true
+              this.assignedCheck[i] = true
+            }
+          }
         }
       })
       .catch((err) => {
@@ -147,9 +158,27 @@ export default defineComponent({
         console.log(err);
       })
     },
+    getSelectedStaffs() {
+      this.$api.get('/staffs/selected')
+      .then((res) => {
+        if (res.status == 200) {
+          console.log(res.data)
+          this.staffs = res.data
+        }
+      })
+      .catch((err) => {
+        Notify.create({
+          type: "negative",
+          message: "Unauthorized staffs"
+        })
+        console.log(err);
+      })
+    },
     onAssigned(request) {
+      const index = this.requests.indexOf(request);
       const data = {
-        status: "In-progress"
+        status: "In-progress",
+        staff_id: this.requests[index].staffID
       }
       console.log(data)
       this.$api.put("/requests/" + request.id, data)
@@ -165,12 +194,34 @@ export default defineComponent({
       .catch((err)=>{
         console.log(err)
       })
-      if(request.staffNameLabel != null) {
-        // Change it true at last
+      // if(request.staffNameLabel != null) {
+      //   // Change it true at last
+      //   this.assignedCheck[index] = !this.assignedCheck[index]
+      // }
+    
+      const data2 = {
+        staff_status: true
+      }
+      console.log("bbb " + this.requests[index].staffNameLabel)
+      console.log("aaa "+ this.requests[index].staffID)
+      this.$api.put("/staffs/staff/" + this.requests[index].staffID, data2)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "staff assigned ID: " + this.requests[index].staffID
+          })
+          this.getSelectedStaffs();
+
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+
+      if(this.requests[index].staffNameLabel != null) {
         this.assignedCheck[index] = !this.assignedCheck[index]
       }
-      
-
       // const index = this.requests.indexOf(request)
       // const length = this.staffs.length
       // let id = 0
@@ -194,8 +245,10 @@ export default defineComponent({
       // }
     },
     onReject(request) {
+      const index = this.requests.indexOf(request);
       const data = {
-        status: "Rejected"
+        status: "Rejected",
+        staff_id: this.requests[index].staffID
       }
       console.log(data)
       this.$api.put("/requests/" + request.id, data)
@@ -211,6 +264,24 @@ export default defineComponent({
       .catch((err)=>{
         console.log(err)
       })
+
+      const data2 = {
+        staff_status: false
+      }
+      this.$api.put("/staffs/staff/" + this.requests[index].staffID, data2)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "staff rejected ID: " + this.requests[index].staffID
+          })
+          this.getSelectedStaffs();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+      this.disableCheck[index] = !this.disableCheck[index]
     },
     statusColor(status) {
       for(let i = 0; i < this.requests.length; i++) {
@@ -232,7 +303,8 @@ export default defineComponent({
   async mounted() {
     //this.dataReady = true
     await this.getAllRequests();
-    await this.getAllStaffs();
+    //await this.getAllStaffs();
+    await this.getSelectedStaffs();
   }
 })
 </script>

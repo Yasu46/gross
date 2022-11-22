@@ -6,5 +6,7 @@ module.exports = (app) => {
   router.get("/", staff_controller.getAllStaffs);
   router.put("/:id", staff_controller.updateStaff);
   router.delete("/:id", staff_controller.deleteStaff);
+  router.get("/selected", staff_controller.getSelectedStaffs);
+  router.put("/staff/:id", staff_controller.updateStatusStaff);
   app.use("/staffs", router);
 };

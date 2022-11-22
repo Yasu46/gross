@@ -238,6 +238,7 @@ export default defineComponent({
       if(this.totalPrice() > 0) {
         const data = {
           user_id: this.store.userid,
+          staff_id: null,
           total_price: this.totalPrice(),
           request_date: requestDate,
           status: "Pending"

@@ -51,6 +51,7 @@ const updateCategory = (req, res) => {
   }
   const data = {
     name: req.body.name,
+    visible: req.body.visibility
   };
   Category.updateByID(req.params.id, data, (err, result) => {
     if(err) {

@@ -124,12 +124,13 @@ const deleteUser = (req, res) => {
     }
     else res.send(result);
   });
-}
+};
+
 module.exports = {
   createNewUser,
   validUsername,
   login,
   getAllUsers,
   updateUser,
-  deleteUser
+  deleteUser,
 }

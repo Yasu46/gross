@@ -416,6 +416,7 @@ export default defineComponent({
         { name: 'actions', label: 'Actions', field: 'actions', align: 'center', }
       ],
       visibleStaff: [],
+      statusStaff: [],
 
       // edit & delete
       input: [],
@@ -431,6 +432,13 @@ export default defineComponent({
         if (res.status == 200) {
           console.log(res.data);
           this.categories = res.data
+          for(let i = 0;i<this.categories.length; i++) {
+            if(this.categories[i].visible) {
+              this.visibleCategory[i] = true
+            }else{
+              this.visibleCategory[i] = false
+            }
+          }
         }
       })
       .catch((err) => {
@@ -448,6 +456,13 @@ export default defineComponent({
         if (res.status == 200) {
           // console.log(res.data);
           this.items = res.data
+          for(let i = 0;i<this.items.length; i++) {
+            if(this.items[i].visible) {
+              this.visibleItem[i] = true
+            }else{
+              this.visibleItem[i] = false
+            }
+          }
         }
       })
       .catch((err) => {
@@ -465,6 +480,13 @@ export default defineComponent({
         if (res.status == 200) {
           console.log(res.data)
           this.staffs = res.data
+          for(let i = 0;i<this.staffs.length; i++) {
+            if(this.staffs[i].visible) {
+              this.visibleStaff[i] = true
+            }else{
+              this.visibleStaff[i] = false
+            }
+          }
         }
       })
       .catch((err) => {
@@ -474,6 +496,7 @@ export default defineComponent({
         })
         console.log(err);
       })
+      
     },
 
     onAddCategory() {
@@ -533,7 +556,8 @@ export default defineComponent({
     onAddStaff() {
       const data = {
         name: this.staff,
-        visible: false
+        visible: false,
+        staff_status: false
       }
       this.$api.post('/staffs/create', data)
       .then((res) => {
@@ -587,7 +611,8 @@ export default defineComponent({
 
     onEditCategory() {
       const data = {
-        name: this.input.name
+        name: this.input.name,
+        visibility: this.input.visible
       }
       console.log(data)
       this.$api.put("/categories/" + this.input.id, data)
@@ -610,6 +635,7 @@ export default defineComponent({
       const data = {
         name: this.input.name,
         price: this.input.price,
+        visibility: this.input.visible
       }
       console.log(data)
       this.$api.put("/items/" + this.input.id, data)
@@ -632,6 +658,7 @@ export default defineComponent({
     onEditStaff() {
       const data = {
         name: this.input.name,
+        visibility: this.input.visible
       }
       console.log(data)
       this.$api.put("/staffs/" + this.input.id, data)
@@ -661,6 +688,7 @@ export default defineComponent({
             message: "Deleted category ID: " + res.data.id
           })
           this.getAllCategories();
+          this.getAllItems();
         }
       })
       .catch((err) => {
@@ -711,16 +739,75 @@ export default defineComponent({
     onVisibleCategory(category) {
       const index = this.categories.indexOf(category);
       this.visibleCategory[index] = !this.visibleCategory[index]
+
+      const data = {
+        name: category.name,
+        visibility: this.visibleCategory[index]
+      }
+      
+      this.$api.put("/categories/" + category.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Updated category visibility ID: " + res.data.id
+          })
+          this.getAllCategories();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
     },
 
     onVisibleItem(item) {
       const index = this.items.indexOf(item);
       this.visibleItem[index] = !this.visibleItem[index]
+      console.log(this.visibleItem[index])
+
+      const data = {
+        name: item.name,
+        price: item.price,
+        visibility: this.visibleItem[index]
+      }
+      
+      this.$api.put("/items/" + item.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Updated item visibility ID: " + res.data.id
+          })
+          this.getAllItems();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
     },
 
     onVisibleStaff(staff) {
       const index = this.staffs.indexOf(staff);
       this.visibleStaff[index] = !this.visibleStaff[index]
+      console.log("aaa "+this.visibleStaff[index])
+      const data = {
+        name: staff.name,
+        visibility: this.visibleStaff[index]
+      }
+      
+      this.$api.put("/staffs/" + staff.id, data)
+      .then((res) => {
+        if(res.status == 200) {
+          Notify.create({
+            type: "positive",
+            message: "Updated staff visibility ID: " + res.data.id
+          })
+          this.getAllStaffs();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
     }
   },
   async mounted() {

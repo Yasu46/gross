@@ -67,8 +67,8 @@ Item.getAllRecords = (result) => {
 }
 
 Item.updateByID = (id, data, result) => {
-  sql.query("UPDATE items SET name=?, price=? WHERE id=?", 
-  [data.name, data.price, id], (err, res) => {
+  sql.query("UPDATE items SET name=?, price=?, visible=? WHERE id=?", 
+  [data.name, data.price, data.visible, id], (err, res) => {
     if(err) {
       console.log("Query error: " + err);
       result(err, null);
