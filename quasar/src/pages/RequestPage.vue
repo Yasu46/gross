@@ -272,7 +272,6 @@ export default defineComponent({
           console.log(res.data.request_date)
           this.getAllHistories()
           this.$refs.myRequestForm.reset()
-          this.weight=[]
         })
         .catch((err)=>{
           console.log(err)
@@ -288,7 +287,8 @@ export default defineComponent({
       this.checkItem = []
       this.selectedPrice = []
       this.date = ''
-      this.time = undefined
+      this.time = undefined,
+      this.msg = []
     },
     statusColor(status) {
       for(let i = 0; i < this.histories.length; i++) {
