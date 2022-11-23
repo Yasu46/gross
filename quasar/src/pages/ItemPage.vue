@@ -422,7 +422,10 @@ export default defineComponent({
       input: [],
       c_form_edit: false,
       i_form_edit: false,
-      s_form_edit: false
+      s_form_edit: false,
+
+      check:false,
+      checkCategory:false
     }
   },
   methods: {
@@ -456,6 +459,8 @@ export default defineComponent({
         if (res.status == 200) {
           // console.log(res.data);
           this.items = res.data
+          console.log(this.items)
+          
           for(let i = 0;i<this.items.length; i++) {
             if(this.items[i].visible) {
               this.visibleItem[i] = true
@@ -463,13 +468,26 @@ export default defineComponent({
               this.visibleItem[i] = false
             }
           }
+
+          for(let i = 0;i<this.categories.length; i++) {
+            if(this.categories[i].visible) {
+              for(let j = 0; i<this.items.length; j++){
+               if(this.items[j].category == this.categories[i].name)
+              this.visibleItem[j] = true 
+              }
+            }else{
+              this.visibleItem[j] = false
+            }
+          }
+
+          console.log(this.visibleItem)
         }
       })
       .catch((err) => {
-        Notify.create({
-          type: "negative",
-          message: "Unauthorized items"
-        })
+        // Notify.create({
+        //   type: "negative",
+        //   message: "Unauthorized items"
+        // })
         console.log(err);
       })
     },
@@ -505,6 +523,14 @@ export default defineComponent({
         name: this.category,
         visible: false
       }
+
+      for(let i=0; i<this.categories.length; i++){
+        if(this.categories[i].name == data.name){
+          this.check = true
+        }
+      }
+
+      if(!this.check){
       this.$api.post('/categories/create', data)
       .then((res) => {
         if(res.status == 200) {
@@ -520,6 +546,8 @@ export default defineComponent({
       .catch((err) => {
         console.log(err);
       })
+      }
+      
     },
 
     onAddProduct() {
@@ -535,7 +563,15 @@ export default defineComponent({
         category_id: c_id,
         visible: false
       }
-      this.$api.post('/items/create', data)
+      
+      for(let j=0; j<this.items.length; j++){
+        if(this.items[j].name == data.name){
+          this.check = true
+        }
+      }
+      
+      if(!this.check){
+        this.$api.post('/items/create', data)
       .then((res) => {
         if(res.status == 200) {
           console.log("created item: " + res.data);
@@ -551,6 +587,7 @@ export default defineComponent({
       .catch((err) => {
         console.log(err);
       })
+      }
     },
 
     onAddStaff() {
@@ -739,6 +776,8 @@ export default defineComponent({
     onVisibleCategory(category) {
       const index = this.categories.indexOf(category);
       this.visibleCategory[index] = !this.visibleCategory[index]
+
+    console.log(this.visibleCategory[index])
 
       const data = {
         name: category.name,

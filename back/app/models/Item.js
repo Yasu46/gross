@@ -56,7 +56,7 @@ Item.checkItemName = (name, result) => {
 // }
 
 Item.getAllRecords = (result) => {
-  sql.query("SELECT i.id, i.name, i.price, c.name AS category FROM items i INNER JOIN categories c ON i.category_id = c.id ORDER BY id ASC;", (err, res) => {
+  sql.query("SELECT i.id, i.name, i.price, c.name AS category, i.visible FROM items i INNER JOIN categories c ON i.category_id = c.id ORDER BY id ASC;", (err, res) => {
     if(err) {
       console.log("Query error: " + err);
       result(err, null);
@@ -64,7 +64,18 @@ Item.getAllRecords = (result) => {
     }
     result(null, res);
   });
-}
+};
+
+Item.getSelectedRecords = (result) => {
+  sql.query("SELECT i.id, i.name, i.price, c.name AS category, i.visible FROM items i INNER JOIN categories c ON i.category_id = c.id WHERE i.visible = false and c.visible = false ORDER BY id ASC;", (err, res) => {
+    if(err) {
+      console.log("Query error: " + err);
+      result(err, null);
+      return;
+    }
+    result(null, res);
+  });
+};
 
 Item.updateByID = (id, data, result) => {
   sql.query("UPDATE items SET name=?, price=?, visible=? WHERE id=?", 

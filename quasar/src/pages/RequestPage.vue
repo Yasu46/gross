@@ -159,8 +159,26 @@ export default defineComponent({
     }
   },
   methods: {
-    getAllItems() {
-      this.$api.get('/items')
+    // getAllItems() {
+    //   this.$api.get('/items')
+    //   .then((res) => {
+    //     if (res.status == 200) {
+    //       console.log(res.data);
+    //       this.items = res.data
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     Notify.create({
+    //       type: "negative",
+    //       message: "Unauthorized"
+    //     })
+    //     this.store.clearStore()
+    //     this.$router.push("/login")
+    //   })
+    // },
+
+    getSelectedItems() {
+      this.$api.get('/items/select')
       .then((res) => {
         if (res.status == 200) {
           console.log(res.data);
@@ -176,6 +194,7 @@ export default defineComponent({
         this.$router.push("/login")
       })
     },
+
     getAllHistories() {
       console.log(this.store.getUserId)
       this.$api.get(`/requests/${this.store.getUserId}`)
@@ -253,6 +272,7 @@ export default defineComponent({
           console.log(res.data.request_date)
           this.getAllHistories()
           this.$refs.myRequestForm.reset()
+          this.weight=[]
         })
         .catch((err)=>{
           console.log(err)
@@ -261,7 +281,6 @@ export default defineComponent({
       else {
         this.confirm = true
       }
-
       
     },
     onReset() {
@@ -307,7 +326,7 @@ export default defineComponent({
     },
   },
   async mounted() {
-    await this.getAllItems();
+    await this.getSelectedItems();
     //this.dataReady = true
     await this.getAllHistories();
   }

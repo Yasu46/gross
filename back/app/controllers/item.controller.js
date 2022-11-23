@@ -81,6 +81,16 @@ const getAllItems = (req, res) => {
   });
 };
 
+const getSelectedItems = (req, res) => {
+  Item.getSelectedRecords((err, data) => {
+    if(err) {
+      res.status(500).send({
+        message: err.message || "Some error occured while creating."
+      })
+    }else res.send(data);
+  });
+};
+
 const updateItem = (req, res) => {
   if(!req.body) {
     res.status(400).send({ message: "Content can not be empty."});
@@ -125,5 +135,6 @@ module.exports = {
   createNewItem,
   getAllItems,
   updateItem,
-  deleteItem
+  deleteItem,
+  getSelectedItems
 }

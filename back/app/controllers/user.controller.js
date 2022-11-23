@@ -12,7 +12,6 @@ const createNewUser = (req, res) => {
     name: req.body.name,
     email: req.body.email,
     address: req.body.address,
-    visible: req.body.visible,
     password: req.body.password,
   });
   User.create(userObj, (err, data) => {

@@ -7,5 +7,6 @@ module.exports = (app) => {
   router.get("/", item_controller.getAllItems);
   router.put("/:id", item_controller.updateItem);
   router.delete("/:id", item_controller.deleteItem);
+  router.get("/select", item_controller.getSelectedItems);
   app.use("/items", router);
 };

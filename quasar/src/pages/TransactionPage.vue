@@ -111,6 +111,8 @@ export default defineComponent({
       staffs: [],
       staffNameLabel: [],
       staffID: [],
+
+      saveStaffID:[]
     }
   },
   methods: {
@@ -180,7 +182,7 @@ export default defineComponent({
         status: "In-progress",
         staff_id: this.requests[index].staffID
       }
-      console.log(data)
+      this.saveStaffID[index]=this.requests[index].staffID
       this.$api.put("/requests/" + request.id, data)
       .then((res) => {
         if(res.status == 200) {
@@ -202,8 +204,7 @@ export default defineComponent({
       const data2 = {
         staff_status: true
       }
-      console.log("bbb " + this.requests[index].staffNameLabel)
-      console.log("aaa "+ this.requests[index].staffID)
+      
       this.$api.put("/staffs/staff/" + this.requests[index].staffID, data2)
       .then((res) => {
         if(res.status == 200) {
@@ -245,10 +246,12 @@ export default defineComponent({
       // }
     },
     onReject(request) {
+      console.log(request)
+      this.getAllRequests();
       const index = this.requests.indexOf(request);
       const data = {
         status: "Rejected",
-        staff_id: this.requests[index].staffID
+        staff_id: this.requests[index].staff_id
       }
       console.log(data)
       this.$api.put("/requests/" + request.id, data)
@@ -266,14 +269,15 @@ export default defineComponent({
       })
 
       const data2 = {
-        staff_status: false
+        staff_status:false
       }
-      this.$api.put("/staffs/staff/" + this.requests[index].staffID, data2)
+      console.log("reject request id " + this.requests[4].id)
+      this.$api.put("/staffs/staff/" + this.requests[index].staff_id, data2)
       .then((res) => {
         if(res.status == 200) {
           Notify.create({
             type: "positive",
-            message: "staff rejected ID: " + this.requests[index].staffID
+            message: "staff rejected ID: " + this.saveStaffID[index]
           })
           this.getSelectedStaffs();
         }

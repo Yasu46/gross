@@ -100,7 +100,6 @@ export default defineComponent({
         name: this.name,
         email: this.email,
         address: this.address,
-        visible: false,
         password: this.password,
       }
       //console.log(data);
@@ -114,7 +113,7 @@ export default defineComponent({
           this.store.userid = res.data.id
           this.store.name = res.data.name
           console.log("created successfully");
-          this.$router.push("/login");
+          this.$router.push("/request");
         }
       });
       this.$refs.myRegisterForm.reset();
