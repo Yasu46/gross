@@ -83,7 +83,7 @@ export default defineComponent({
       email: '',
       address: '',
       password: '',
-      isPwd: false,
+      isPwd: true,
       usernameCaption: {
         show: false,
         showClass: false,

@@ -17,7 +17,12 @@
           <q-icon name="login" size="md" class="cursor-pointer" @click="onLogin()"/>
         </div>
       </q-toolbar>
-      
+      <q-tabs align="left" v-if="store.getFullname=='admin'">
+        <q-route-tab to="/dashboard" label="Dash Board" />
+        <q-route-tab to="/item" label="Item" />
+        <q-route-tab to="/transaction" label="Transaction" />
+        <q-route-tab to="/staff" label="staff" />
+      </q-tabs>
     </q-header>
 
     <q-page-container>

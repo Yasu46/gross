@@ -471,12 +471,10 @@ export default defineComponent({
 
           for(let i = 0;i<this.categories.length; i++) {
             if(this.categories[i].visible) {
-              for(let j = 0; i<this.items.length; j++){
-               if(this.items[j].category == this.categories[i].name)
+              for(let j = 0; j<this.items.length; j++){
+                if(this.items[j].category == this.categories[i].name)
               this.visibleItem[j] = true 
               }
-            }else{
-              this.visibleItem[j] = false
             }
           }
 
@@ -484,10 +482,10 @@ export default defineComponent({
         }
       })
       .catch((err) => {
-        // Notify.create({
-        //   type: "negative",
-        //   message: "Unauthorized items"
-        // })
+        Notify.create({
+          type: "negative",
+          message: "Unauthorized items"
+        })
         console.log(err);
       })
     },

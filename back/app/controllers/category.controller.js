@@ -85,32 +85,32 @@ const deleteCategory = (req, res) => {
   });
 };
 
-const visibleCategory = (req, res) => {
-  if(!req.body) {
-    res.status(400).send({ message: "Content can not be empty."});
-  }
-  const data = {
-    visible: !req.body.visible,
-  };
-  Category.visible(req.params.id, data, (err, result) => {
-    if(err) {
-      if(err.kind == "not_found") {
-        res.status(401).send({
-          message: "Not found category id: " + req.params.id
-        });
-      } else {
-        res.status(500).send({
-          message: "Error update category id: " + req.params.id
-        });
-      }
-    } else res.send(result);
-  });
-}
+// const visibleCategory = (req, res) => {
+//   if(!req.body) {
+//     res.status(400).send({ message: "Content can not be empty."});
+//   }
+//   const data = {
+//     visible: !req.body.visible,
+//   };
+//   Category.visible(req.params.id, data, (err, result) => {
+//     if(err) {
+//       if(err.kind == "not_found") {
+//         res.status(401).send({
+//           message: "Not found category id: " + req.params.id
+//         });
+//       } else {
+//         res.status(500).send({
+//           message: "Error update category id: " + req.params.id
+//         });
+//       }
+//     } else res.send(result);
+//   });
+// }
 module.exports = {
   createNewCategory,
   validCategory,
   getAllCategories,
   updateCategory,
   deleteCategory,
-  visibleCategory
+  // visibleCategory
 }

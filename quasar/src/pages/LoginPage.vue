@@ -85,8 +85,10 @@ export default defineComponent({
           this.store.userid = res.data.id
           this.store.name = res.data.name
           this.store.login = true
+          if(this.store.name == 'admin') {
+            this.$router.push("/transaction")
+          }else {this.$router.push("/request")}
         }
-        this.$router.push("/request")
       })
       .catch((err) => {
         console.log(err)
